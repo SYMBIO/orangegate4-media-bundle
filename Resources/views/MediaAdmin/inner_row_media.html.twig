@@ -12,10 +12,6 @@ file that was distributed with this source code.
 {% extends 'SonataAdminBundle:CRUD:base_list_flat_inner_row.html.twig' %}
 
 {% block row %}
-	{%  if (object.providerName == 'sonata.media.provider.file') %}
-		{% import 'LovochemieBundle:Download:downloadMacro.html.twig' as downloadMacro %}
-	{% endif %}
-
 	<div class="col-sm-12">
 		{% if (object.providerName == 'sonata.media.provider.image') %}
 			<div class="pull-left">
@@ -43,6 +39,7 @@ file that was distributed with this source code.
 		{% endif %}
 
 		{%  if (object.providerName == 'sonata.media.provider.file') %}
+			{% import 'SymbioOrangeGate:MediaBundle:MediaAdmin:_macro.html.twig' as macro %}
 			<table style="width:100%; margin-bottom:0">
 				<tbody>
 					<tr>
@@ -54,7 +51,7 @@ file that was distributed with this source code.
 							{% set filenameParts = object.providerMetadata.filename|split('.') %}
 							{{ 'list.label_type'|trans({}, 'SonataMediaBundle') }}: {{ filenameParts[filenameParts|length-1]|upper }}
 							<br />
-							{{ 'list.label_size'|trans({}, 'SonataMediaBundle') }}: {{ downloadMacro.fileSize(object.size) }}
+							{{ 'list.label_size'|trans({}, 'SonataMediaBundle') }}: {{ macro.fileSize(object.size) }}
 						</td>
 						<td style="vertical-align:top; text-align:left">
 							<a href="{% path object, 'reference' %}" target="_blank">{{ 'list.label_preview'|trans({}, 'SonataMediaBundle') }}</a>

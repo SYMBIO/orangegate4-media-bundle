@@ -32,7 +32,7 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
             return $parameters;
         }
 
-        if ($filter = $this->getRequest()->get('filter')) {
+        if ($filter = $this->getRequest()->get('filter') && isset($filter['context'])) {
             $context = $filter['context']['value'];
         } else {
             $context   = $this->getRequest()->get('context', $this->pool->getDefaultContext());
