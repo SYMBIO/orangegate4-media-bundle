@@ -3,7 +3,7 @@ services:
       class: Symbio\OrangeGate\MediaBundle\Admin\MediaAdmin
       tags:
         - { name: sonata.admin, manager_type: orm, group: Content, label: media }
-      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Media, %sonata.media.admin.media.controller%, @sonata.media.pool, @sonata.classification.manager.category]
+      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Media, SymbioOrangeGateMediaBundle:MediaAdmin, @sonata.media.pool, @sonata.classification.manager.category, @sonata.classification.manager.context, @orangegate.site.pool]
       calls:
         - [ setModelManager, [@sonata.media.admin.media.manager] ]
         - [ setTranslationDomain, [%sonata.media.admin.media.translation_domain%] ]

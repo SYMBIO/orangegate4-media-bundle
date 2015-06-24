@@ -24,7 +24,7 @@
             </trans-unit>
             <trans-unit id="sidemenu.link_context_news">
                 <source>sidemenu.link_context_news</source>
-                <target>Novinky</target>
+                <target>Aktuality</target>
             </trans-unit>
             <trans-unit id="sidemenu.link_context_user">
                 <source>sidemenu.link_context_user</source>
