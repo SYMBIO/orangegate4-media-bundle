@@ -44,6 +44,7 @@ class Media extends BaseMedia
     public function __construct()
     {
         $this->galleryHasMedias = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->enabled = true;
     }
 
     /**

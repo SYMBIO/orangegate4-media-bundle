@@ -7,10 +7,10 @@
             <p class="bg-warning">{{ admin.trans('warning_no_category', {}, admin.translationdomain) }}</p>
         </div>
     {% endif %}
-    <ul{% if root %} class="sonata-tree sonata-tree--small js-treeview sonata-tree--toggleable"{% endif %}>
+    <ul{% if root %} class="sonata-tree sonata-tree--small js-treeview sonata-tree--toggleable"{% endif %} style="display:block">
         {% for element in collection %}
             <li>
-                <div class="sonata-tree__item{% if element.id == current_category %} is-active{% endif %}"{% if depth < 2 %} data-treeview-toggled{% endif %}>
+                <div class="sonata-tree__item{% if element.id == current_category %} is-active{% endif %} is-toggled" data-treeview-toggled>
                     {% if element.parent or root %}<i class="fa fa-caret-right" data-treeview-toggler></i>{% endif %}
                     <a class="sonata-tree__item__edit" href="{{ url(app.request.attributes.get('_route'), app.request.query.all|merge({category: element.id})) }}">{{ element.name }}</a>
                 </div>
