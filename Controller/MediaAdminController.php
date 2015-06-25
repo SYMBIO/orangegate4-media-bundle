@@ -13,38 +13,6 @@ class MediaAdminController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function createAction(Request $request = null)
-    {
-        if (false === $this->admin->isGranted('CREATE')) {
-            throw new AccessDeniedException();
-        }
-
-        if (!$request->get('provider') && $request->isMethod('get')) {
-            return $this->render('SonataMediaBundle:MediaAdmin:select_provider.html.twig', array(
-                'providers'     => $this->get('sonata.media.pool')->getProvidersByContext($request->get('context', $this->get('sonata.media.pool')->getDefaultContext())),
-                'base_template' => $this->getBaseTemplate(),
-                'admin'         => $this->admin,
-                'action'        => 'create'
-            ));
-        }
-
-        return parent::createAction();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function render($view, array $parameters = array(), Response $response = null, Request $request = null)
-    {
-        $parameters['media_pool']            = $this->container->get('sonata.media.pool');
-        $parameters['persistent_parameters'] = $this->admin->getPersistentParameters();
-
-        return parent::render($view, $parameters, $response, $request);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function listAction(Request $request = null)
     {
         if (false === $this->admin->isGranted('LIST')) {
