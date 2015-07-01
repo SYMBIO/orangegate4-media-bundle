@@ -1,11 +1,16 @@
 services:
-    sonata.core.form.type.image_collection:
-        class: Symbio\OrangeGate\MediaBundle\Form\Type\ImageCollectionType
+    sonata.core.form.type.media_collection:
+        class: Symbio\OrangeGate\MediaBundle\Form\Type\MediaCollectionType
         tags:
-            - { name: form.type, alias: orangegate_type_image_collection }
+            - { name: form.type, alias: orangegate_type_media_collection }
         arguments: [@service_container]
 
     sonata.core.form.type.image:
         class: Symbio\OrangeGate\MediaBundle\Form\Type\ImageType
         tags:
             - { name: form.type, alias: orangegate_type_image }
+
+    sonata.core.form.type.file:
+        class: Symbio\OrangeGate\MediaBundle\Form\Type\FileType
+        tags:
+            - { name: form.type, alias: orangegate_type_file }

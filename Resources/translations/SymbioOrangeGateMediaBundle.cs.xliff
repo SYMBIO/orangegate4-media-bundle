@@ -58,6 +58,10 @@
                 <source>link_upload_new</source>
                 <target>Nahrát obrázky</target>
             </trans-unit>
+            <trans-unit id="link_upload_new_file">
+                <source>link_upload_new_file</source>
+                <target>Nahrát soubory</target>
+            </trans-unit>
             <trans-unit id="link_list">
                 <source>link_list</source>
                 <target>Zvolit z nahraných</target>
@@ -65,6 +69,10 @@
             <trans-unit id="label_dropzone">
                 <source>label_dropzone</source>
                 <target>Soubory můžete upustit zde</target>
+            </trans-unit>
+            <trans-unit id="error.whitelist">
+                <source>error.whitelist</source>
+                <target>Nepodporovaný formát souboru.</target>
             </trans-unit>
         </body>
     </file>

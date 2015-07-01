@@ -149,8 +149,31 @@
         return false;
     }
 
-    function add_field_item (id, name, url) {
-        var template = '<div class="image-item"><div id="field_container_{{ id }}_{position}_{{ media_field }}" class="field-container image-box clearfix"><span id="field_actions_{{ id }}_{position}_{{ media_field }}" class="field-actions"><span id="field_widget_{{ id }}_{position}_{{ media_field }}" class="field-short-description"><a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-2x fa-trash"></i></a><img title="{name}" width="208" height="117" src="{url}"></span></span><input type="hidden" id="{{ id }}_{position}_{{ media_field }}" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][{{ media_field }}]" class="form-control" value="{id}"></div><input type="hidden" id="{{ id }}_{position}_position" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][position]" class=" form-control" value="{position1}"></div>';
+    function add_field_item (id, name, url, contentType, mediaType) {
+        if (mediaType !== undefined && mediaType == 'file') {
+           var icon;
+           if (contentType == 'application/pdf') {
+               icon = 'fa-file-pdf-o';
+           } else if (contentType == 'application/excel' || contentType == 'application/vnd.ms-excel' || contentType == 'application/x-excel') {
+               icon = 'fa-file-excel-o';
+           } else if (contentType == 'application/msword') {
+               icon = 'fa-file-word-o';
+           } else if (contentType == 'application/mspowerpoint' || contentType == 'application/vnd.ms-powerpoint' || contentType == 'application/x-mspowerpoint') {
+               icon = 'fa-file-powerpoint-o';
+           } else if (contentType == 'application/x-compressed' || contentType == 'application/zip') {
+               icon = 'fa-file-archive-o';
+           } else if (contentType == 'image/gif' || contentType == 'image/png' || contentType == 'image/jpeg') {
+               icon = 'fa-file-image-o';
+           } else if (contentType == 'video/avi' || contentType == 'video/mpeg' || contentType == 'video/mp4' || contentType == 'video/x-flv' || contentType == 'video/x-ms-wmv' || contentType == 'video/quicktime') {
+               icon = 'fa-file-video-o';
+           } else {
+               icon = 'fa-file-o';
+           }
+           var template = '<div class="image-item"><div id="field_container_{{ id }}_{position}_{{ media_field }}" class="field-container image-box clearfix"><span id="field_actions_{{ id }}_{position}_{{ media_field }}" class="field-actions"><span id="field_widget_{{ id }}_{position}_{{ media_field }}" class="field-short-description"><a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-2x fa-trash"></i></a><a class="file_widget" href="{url}"><i class="fa ' + icon + ' fa-4x" style="color:#93A1A1"></i><br>{name}</a></span></span><input type="hidden" id="{{ id }}_{position}_{{ media_field }}" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][{{ media_field }}]" class="form-control" value="{id}"></div><input type="hidden" id="{{ id }}_{position}_position" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][position]" class=" form-control" value="{position1}"></div>';
+        } else {
+           var template = '<div class="image-item"><div id="field_container_{{ id }}_{position}_{{ media_field }}" class="field-container image-box clearfix"><span id="field_actions_{{ id }}_{position}_{{ media_field }}" class="field-actions"><span id="field_widget_{{ id }}_{position}_{{ media_field }}" class="field-short-description"><a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-2x fa-trash"></i></a><img title="{name}" width="208" height="117" src="{url}"></span></span><input type="hidden" id="{{ id }}_{position}_{{ media_field }}" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][{{ media_field }}]" class="form-control" value="{id}"></div><input type="hidden" id="{{ id }}_{position}_position" name="{{ form.parent.vars.name }}[{{ form.vars.name }}][{position}][position]" class=" form-control" value="{position1}"></div>';
+        }
+
         var position = $('#field_widget_{{ id }} .image-item').length,
             position1 = position + 1,
             regex;

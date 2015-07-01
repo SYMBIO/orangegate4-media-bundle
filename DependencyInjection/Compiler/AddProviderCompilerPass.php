@@ -16,8 +16,8 @@ class AddProviderCompilerPass implements CompilerPassInterface
         $definition->addMethodCall('addFormat', array('admin', array(
             'format'        => 'jpg',
             'quality'       => 95,
-            'width'         => 208,
-            'height'        => 117,
+            'width'         => 148,
+            'height'        => 83,
         )));
     }
 }

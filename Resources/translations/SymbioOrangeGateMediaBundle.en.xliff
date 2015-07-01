@@ -46,6 +46,10 @@
                 <source>link_upload_new</source>
                 <target>Upload images</target>
             </trans-unit>
+            <trans-unit id="link_upload_new_file">
+                <source>link_upload_new_file</source>
+                <target>Upload files</target>
+            </trans-unit>
             <trans-unit id="link_list">
                 <source>link_list</source>
                 <target>Select images</target>
@@ -53,6 +57,10 @@
             <trans-unit id="label_dropzone">
                 <source>label_dropzone</source>
                 <target>Drop the files here</target>
+            </trans-unit>
+            <trans-unit id="error.whitelist">
+                <source>error.whitelist</source>
+                <target>Unsupported file format.</target>
             </trans-unit>
         </body>
     </file>

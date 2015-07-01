@@ -20,7 +20,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 use Sonata\AdminBundle\Form\DataTransformer\ModelToIdTransformer;
 
-class ImageType extends AbstractType
+class FileType extends AbstractType
 {
     /**
      * {@inheritDoc}
@@ -67,6 +67,6 @@ class ImageType extends AbstractType
      */
     public function getName()
     {
-        return 'orangegate_type_image';
+        return 'orangegate_type_file';
     }
 }

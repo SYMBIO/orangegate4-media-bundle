@@ -22,4 +22,10 @@ services:
         class: Symbio\OrangeGate\MediaBundle\Listener\UploadListener
         tags:
             - { name: kernel.event_listener, event: oneup_uploader.post_persist, method: onUpload }
-        arguments: [ @sonata.media.manager.media, @sonata.media.pool, @sonata.classification.manager.category ]
+        arguments: [ @sonata.media.manager.media, @sonata.media.pool, @sonata.classification.manager.category, @service_container ]
+        scope: container
+
+    orangegate.upload.error_handler:
+      class: Symbio\OrangeGate\MediaBundle\Uploader\ErrorHandler\UploaderErrorHandler
+      arguments: [ @translator ]
+

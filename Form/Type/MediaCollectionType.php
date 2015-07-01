@@ -10,7 +10,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Sonata\CoreBundle\Form\EventListener\ResizeFormListener;
 
-class ImageCollectionType extends AbstractType
+class MediaCollectionType extends AbstractType
 {
     protected $container;
 
@@ -41,11 +41,13 @@ class ImageCollectionType extends AbstractType
     {
         $view->vars['btn_list'] = $options['btn_list'];
         $view->vars['btn_upload_new'] = $options['btn_upload_new'];
+        $view->vars['btn_upload_new_file'] = $options['btn_upload_new_file'];
         $view->vars['btn_catalogue'] = $options['btn_catalogue'];
         $view->vars['media_field'] = $options['media_field'];
         $view->vars['media_admin'] = $options['media_admin'];
         $view->vars['category'] = $options['category'];
         $view->vars['context'] = $options['context'];
+        $view->vars['media_type'] = $options['media_type'];
     }
 
     /**
@@ -61,11 +63,13 @@ class ImageCollectionType extends AbstractType
             'pre_bind_data_callback' => null,
             'btn_list'               => 'link_list',
             'btn_upload_new'         => 'link_upload_new',
+            'btn_upload_new_file'    => 'link_upload_new_file',
             'btn_catalogue'          => 'SymbioOrangeGateMediaBundle',
             'media_field'            => 'media',
             'media_admin'            => $media_admin,
             'category'               => null,
             'context'                => 'default',
+            'media_type'             => 'image',
         ));
     }
 
@@ -74,6 +78,6 @@ class ImageCollectionType extends AbstractType
      */
     public function getName()
     {
-        return 'orangegate_type_image_collection';
+        return 'orangegate_type_media_collection';
     }
 }

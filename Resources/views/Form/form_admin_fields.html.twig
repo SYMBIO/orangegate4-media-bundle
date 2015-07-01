@@ -1,6 +1,6 @@
 {% extends 'SonataAdminBundle:Form:form_admin_fields.html.twig' %}
 
-{% block orangegate_type_image_collection_widget %}
+{% block orangegate_type_media_collection_widget %}
     {% if sonata_admin.field_description.hasassociationadmin %}
         <div id="field_container_{{ id }}" class="field-container">
             <span class="dropzone"><i class="fa fa-upload"></i> {{ 'label_dropzone'|trans({}, btn_catalogue) }}</span>
@@ -24,8 +24,9 @@
                 </div>
             </span>
 
-            {% if sonata_admin.field_description.associationadmin.hasroute('create') and sonata_admin.field_description.associationadmin.isGranted('CREATE') and btn_upload_new and btn_list %}
+            {% if sonata_admin.field_description.associationadmin.hasroute('create') and sonata_admin.field_description.associationadmin.isGranted('CREATE') and (btn_upload_new or btn_upload_new_file) and btn_list %}
                 <span id="field_actions_{{ id }}" class="field_actions">
+                    {% if form.vars.media_type == 'image' %}
                     <span
                         class="btn btn-success btn-sm btn-outline sonata-ba-action"
                         title="{{ btn_upload_new|trans({}, btn_catalogue) }}"
@@ -33,7 +34,17 @@
                         >
                         <i class="fa fa-upload"></i>
                         <span>{{ btn_upload_new|trans({}, btn_catalogue) }}</span>
-                        <input id="{{ id }}_files" type="file" name="{{ id }}_files[]" data-url="{{ oneup_uploader_endpoint('media') }}" multiple="multiple" style="position:absolute;top:0;right:0;opacity:0;left:0;bottom:0;cursor:pointer;width:100%;" />
+                            <input id="{{ id }}_files" type="file" name="{{ id }}_files[]" data-url="{{ oneup_uploader_endpoint('media_image') }}" multiple="multiple" style="position:absolute;top:0;right:0;opacity:0;left:0;bottom:0;cursor:pointer;width:100%;" />
+                        {% else %}
+                    <span
+                        class="btn btn-success btn-sm btn-outline sonata-ba-action"
+                        title="{{ btn_upload_new_file|trans({}, btn_catalogue) }}"
+                        style="position:relative"
+                        >
+                        <i class="fa fa-upload"></i>
+                        <span>{{ btn_upload_new_file|trans({}, btn_catalogue) }}</span>
+                            <input id="{{ id }}_files" type="file" name="{{ id }}_files[]" data-url="{{ oneup_uploader_endpoint('media_file') }}" multiple="multiple" style="position:absolute;top:0;right:0;opacity:0;left:0;bottom:0;cursor:pointer;width:100%;" />
+                        {% endif %}
                     </span>
                     <a  href="{{ media_admin.generateUrl('list') }}"
                         onclick="return start_field_dialog_form_list_{{ id }}(this);"
@@ -50,7 +61,11 @@
                         $('#{{ id }}_files').fileupload({
                             dataType: 'json',
                             done: function (e, data) {
-                                add_field_item(data.result.id, data.result.name, data.result.url);
+                                if (data.result.error === undefined) {
+                                    add_field_item(data.result.id, data.result.name, data.result.url, data.result.contentType, data.result.mediaType);
+                                } else {
+                                    jQuery("#field_actions_{{ id }}").before('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><p>' + data.result.error + '</p></div>');
+                                }
                             },
                             dragover: function(e) {
                                 var dropZone = $('#field_container_{{ id }}'),
@@ -85,7 +100,8 @@
                             dropZone: $('#field_container_{{ id }}'),
                             formData: {
                                 context: '{{ context }}',
-                                category: '{{ category }}'
+                                category: '{{ category }}',
+                                mediaType: '{{ media_type }}'
                             },
                             progressall: function (e) {
                                 $('#field_container_{{ id }}').find('.loading').show();
@@ -149,6 +165,42 @@
                 <a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-2x fa-trash"></i></a>
                 {% if sonata_admin.field_description.associationadmin.id(sonata_admin.value) %}
                     {% thumbnail sonata_admin.value, 'admin' %}
+                {% elseif sonata_admin.field_description.options.placeholder is defined and sonata_admin.field_description.options.placeholder %}
+                    <span class="inner-field-short-description">
+                        {{ sonata_admin.field_description.options.placeholder|trans({}, 'SonataAdminBundle') }}
+                    </span>
+                {% endif %}
+            </span>
+        </span>
+
+        {{ form_widget(form, {'required':false}) }}
+    </div>
+
+    {#% include 'SonataDoctrineORMAdminBundle:CRUD:edit_orm_many_association_script.html.twig' %#}
+{% endblock %}
+{% block orangegate_type_file_widget %}
+    <div id="field_container_{{ id }}" class="field-container image-box file_widget-box">
+        <span id="field_actions_{{ id }}" class="field-actions">
+            <span id="field_widget_{{ id }}" class="field-short-description">
+                <a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-trash fa-2x"></i></a>
+                {% if sonata_admin.field_description.associationadmin.id(sonata_admin.value) %}
+                    {% if sonata_admin.value.contentType == "application/pdf" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-pdf-o fa-4x" style="color:#93A1A1"></i><br>{{ sonata_admin.value.name }}</a>
+                    {% elseif sonata_admin.value.contentType == "application/excel" or sonata_admin.value.contentType == "application/vnd.ms-excel" or sonata_admin.value.contentType == "application/x-excel" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-excel-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% elseif sonata_admin.value.contentType == "application/msword" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-word-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% elseif sonata_admin.value.contentType == "application/mspowerpoint" or sonata_admin.value.contentType == "application/vnd.ms-powerpoint" or sonata_admin.value.contentType == "application/x-mspowerpoint" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-powerpoint-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% elseif sonata_admin.value.contentType == "application/x-compressed" or sonata_admin.value.contentType == "application/zip" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-archive-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% elseif sonata_admin.value.contentType == "image/gif" or sonata_admin.value.contentType == "image/jpeg" or sonata_admin.value.contentType == "image/png" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-image-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% elseif sonata_admin.value.contentType == "video/avi" or sonata_admin.value.contentType == "video/mpeg" or sonata_admin.value.contentType == "video/mp4" or sonata_admin.value.contentType == "video/x-flv" or sonata_admin.value.contentType == "video/quicktime" or sonata_admin.value.contentType == "video/x-ms-wmv" %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-video-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% else %}
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-o fa-4x" style="color:#93A1A1"></i></a>
+                    {% endif %}
                 {% elseif sonata_admin.field_description.options.placeholder is defined and sonata_admin.field_description.options.placeholder %}
                     <span class="inner-field-short-description">
                         {{ sonata_admin.field_description.options.placeholder|trans({}, 'SonataAdminBundle') }}
