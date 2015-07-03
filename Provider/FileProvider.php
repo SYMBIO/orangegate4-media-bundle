@@ -2,6 +2,11 @@
 
 namespace Symbio\OrangeGate\MediaBundle\Provider;
 
+use Gaufrette\Filesystem;
+use Sonata\MediaBundle\CDN\CDNInterface;
+use Sonata\MediaBundle\Generator\GeneratorInterface;
+use Sonata\MediaBundle\Thumbnail\ThumbnailInterface;
+use Sonata\MediaBundle\Metadata\MetadataBuilderInterface;
 use Sonata\AdminBundle\Form\FormMapper;
 use \Sonata\MediaBundle\Provider\FileProvider as BaseFileProvider;
 use Sonata\MediaBundle\Model\MediaInterface;
@@ -10,6 +15,15 @@ use Symfony\Component\Validator\Constraints\NotNull;
 
 class FileProvider extends BaseFileProvider
 {
+    protected $allowedExtensions;
+
+    protected $allowedMimeTypes;
+
+    public function __construct($name, Filesystem $filesystem, CDNInterface $cdn, GeneratorInterface $pathGenerator, ThumbnailInterface $thumbnail, array $allowedExtensions = array(), array $allowedMimeTypes = array(), MetadataBuilderInterface $metadata = null)
+    {
+        parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail,$allowedExtensions, $allowedMimeTypes, $metadata);
+        $this->allowedMimeTypes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    }
 	/**
 	 * {@inheritdoc}
 	 */
