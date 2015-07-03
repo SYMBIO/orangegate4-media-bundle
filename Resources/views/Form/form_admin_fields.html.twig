@@ -62,7 +62,7 @@
                             dataType: 'json',
                             done: function (e, data) {
                                 if (data.result.error === undefined) {
-                                    add_field_item(data.result.id, data.result.name, data.result.url, data.result.contentType, data.result.mediaType);
+                                    add_field_item_{{ id }}(data.result.id, data.result.name, data.result.url, data.result.contentType, data.result.mediaType);
                                 } else {
                                     jQuery("#field_actions_{{ id }}").before('<div class="alert alert-danger alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button><p>' + data.result.error + '</p></div>');
                                 }
@@ -185,21 +185,21 @@
                 <a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-trash fa-2x"></i></a>
                 {% if sonata_admin.field_description.associationadmin.id(sonata_admin.value) %}
                     {% if sonata_admin.value.contentType == "application/pdf" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-pdf-o fa-4x" style="color:#93A1A1"></i><br>{{ sonata_admin.value.name }}</a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-pdf-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "application/excel" or sonata_admin.value.contentType == "application/vnd.ms-excel" or sonata_admin.value.contentType == "application/x-excel" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-excel-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-excel-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "application/msword" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-word-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-word-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "application/mspowerpoint" or sonata_admin.value.contentType == "application/vnd.ms-powerpoint" or sonata_admin.value.contentType == "application/x-mspowerpoint" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-powerpoint-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-powerpoint-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "application/x-compressed" or sonata_admin.value.contentType == "application/zip" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-archive-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-archive-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "image/gif" or sonata_admin.value.contentType == "image/jpeg" or sonata_admin.value.contentType == "image/png" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-image-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-image-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% elseif sonata_admin.value.contentType == "video/avi" or sonata_admin.value.contentType == "video/mpeg" or sonata_admin.value.contentType == "video/mp4" or sonata_admin.value.contentType == "video/x-flv" or sonata_admin.value.contentType == "video/quicktime" or sonata_admin.value.contentType == "video/x-ms-wmv" %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-video-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-video-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% else %}
-                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-o fa-4x" style="color:#93A1A1"></i></a>
+                        <a class="file_widget" href="{{ sonata_admin.field_description.associationadmin.generateObjectUrl('edit', sonata_admin.value) }}"><i class="fa fa-file-o fa-4x"></i><br>{{ sonata_admin.value.name }}</a>
                     {% endif %}
                 {% elseif sonata_admin.field_description.options.placeholder is defined and sonata_admin.field_description.options.placeholder %}
                     <span class="inner-field-short-description">

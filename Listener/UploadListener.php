@@ -61,7 +61,7 @@ class UploadListener
         $response = $event->getResponse();
         $response['name'] = $media->getName();
         $response['size'] = $media->getSize();
-        $response['url'] = $mediaType == 'image' ? $provider->generatePublicUrl($media, $provider->getFormatName($media, 'widget_thumb')) : $mediaAdmin->generateObjectUrl('edit', $media);
+        $response['url'] = $mediaType == 'image' ? $provider->generatePublicUrl($media, $provider->getFormatName($media, 'admin')) : $mediaAdmin->generateObjectUrl('edit', $media);
         $response['id'] = $media->getId();
         $response['mediaType'] = $mediaType;
         $response['contentType'] = $media->getContentType();

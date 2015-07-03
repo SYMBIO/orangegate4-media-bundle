@@ -149,7 +149,7 @@
         return false;
     }
 
-    function add_field_item (id, name, url, contentType, mediaType) {
+    function add_field_item_{{ id }}(id, name, url, contentType, mediaType) {
         if (mediaType !== undefined && mediaType === 'file') {
            var icon;
            if (contentType === 'application/pdf') {
