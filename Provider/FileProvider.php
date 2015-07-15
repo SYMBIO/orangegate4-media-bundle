@@ -27,6 +27,11 @@ class FileProvider extends BaseFileProvider
         $this->allowedMimeTypes[] = 'image/png';
         $this->allowedMimeTypes[] = 'image/gif';
         $this->allowedMimeTypes[] = 'image/bmp';
+        $this->allowedExtensions[] = 'jpeg';
+        $this->allowedExtensions[] = 'jpg';
+        $this->allowedExtensions[] = 'png';
+        $this->allowedExtensions[] = 'gif';
+        $this->allowedExtensions[] = 'bmp';
     }
 	/**
 	 * {@inheritdoc}
