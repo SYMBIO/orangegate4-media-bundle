@@ -23,6 +23,10 @@ class FileProvider extends BaseFileProvider
     {
         parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail,$allowedExtensions, $allowedMimeTypes, $metadata);
         $this->allowedMimeTypes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+        $this->allowedMimeTypes[] = 'image/jpeg';
+        $this->allowedMimeTypes[] = 'image/png';
+        $this->allowedMimeTypes[] = 'image/gif';
+        $this->allowedMimeTypes[] = 'image/bmp';
     }
 	/**
 	 * {@inheritdoc}
