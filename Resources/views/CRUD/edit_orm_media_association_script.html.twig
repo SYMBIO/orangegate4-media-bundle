@@ -39,7 +39,7 @@
             return;
         }
 
-        add_field_item(element.attr('objectId'), element.find('strong').html(), element.find('img').attr('src'));
+        add_field_item_{{ id }}(element.attr('objectId'), element.find('strong').html(), element.find('img').attr('src'));
         field_dialog_{{ id }}.modal('hide');
     };
 
