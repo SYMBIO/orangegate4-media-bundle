@@ -40,6 +40,7 @@ class FileType extends AbstractType
         if (isset($view->vars['sonata_admin'])) {
             // set the correct edit mode
             $view->vars['sonata_admin']['edit'] = 'list';
+            $view->vars['context'] = $options['context'];
         }
     }
 
@@ -51,6 +52,7 @@ class FileType extends AbstractType
         $resolver->setDefaults(array(
             'model_manager'     => null,
             'class'             => null,
+            'context'           => 'default'
         ));
     }
 

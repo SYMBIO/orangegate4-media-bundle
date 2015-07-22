@@ -13,7 +13,7 @@ class AddProviderCompilerPass implements CompilerPassInterface
     {
         $definition = $container->getDefinition('sonata.media.provider.image');
 
-        $definition->addMethodCall('addFormat', array('admin', array(
+        $definition->addMethodCall('addFormat', array('orangegate', array(
             'format'        => 'jpg',
             'quality'       => 95,
             'width'         => 148,
