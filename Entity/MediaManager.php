@@ -55,4 +55,29 @@ class MediaManager extends BaseEntityManager implements MediaManagerInterface
 
         return $pager;
     }
+
+    public function getMediasByCriteria(array $criteria, $orderBy = array())
+    {
+        $qb = $this->getRepository()
+            ->createQueryBuilder('m')
+            ->select('m');
+
+        if (isset($criteria['letter'])) {
+            $qb->andWhere($qb->expr()->like('m.name', ':name'))
+               ->setParameter('name', $criteria['letter'].'%');
+        }
+
+        if (isset($criteria['category'])) {
+            $qb->andWhere('m.category = :category')
+               ->setParameter('category', $criteria['category']);
+        }
+
+        if ($orderBy) {
+            foreach ($orderBy as $k => $v) {
+                $qb->addOrderBy("m.".$k, $v);
+            }
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
