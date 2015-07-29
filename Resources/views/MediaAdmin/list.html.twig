@@ -47,6 +47,12 @@
 {% endblock %}
 
 {% block list_table %}
+    {# tab_menu block is not rendered for xhr requests by default so we render it manually #}
+    {% if app.request.xmlHttpRequest %}
+        <div class="col-xs-12">
+            {{ block('tab_menu')|raw }}
+        </div>
+    {% endif %}
     <div class="col-xs-6 col-md-3">
         {{ tree.navigate_child([root_category], admin, true, datagrid.values['category']['value'], 1) }}
     </div>
