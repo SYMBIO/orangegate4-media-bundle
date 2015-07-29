@@ -67,6 +67,11 @@ class MediaManager extends BaseEntityManager implements MediaManagerInterface
                ->setParameter('name', $criteria['letter'].'%');
         }
 
+        if (isset($criteria['number'])) {
+            $qb->andWhere('REGEXP(m.name, :regexp) = true')
+               ->setParameter('regexp', '^[0-9].*');
+        }
+
         if (isset($criteria['category'])) {
             $qb->andWhere('m.category = :category')
                ->setParameter('category', $criteria['category']);
