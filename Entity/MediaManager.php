@@ -85,4 +85,21 @@ class MediaManager extends BaseEntityManager implements MediaManagerInterface
 
         return $qb->getQuery()->getResult();
     }
+
+    public function getLettersByCategory($category)
+    {
+        $em = $this->getEntityManager();
+
+        $query = $em->createQuery('
+            SELECT m.name
+            FROM SymbioOrangeGateMediaBundle:Media m
+            WHERE m.category = :category
+            ORDER BY
+              m.name ASC
+        ')->setParameter('category', $category);
+
+        return array_unique(array_map(function($a) {
+            return ucfirst(substr($a['name'], 0, 1));
+        }, $query->getResult()));
+    }
 }
