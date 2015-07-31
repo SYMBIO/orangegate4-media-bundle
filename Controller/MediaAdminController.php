@@ -11,6 +11,69 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 class MediaAdminController extends Controller
 {
     /**
+     * Returns the response object associated with the browser action
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws AccessDeniedException
+     */
+    public function browserAction()
+    {
+        if (false === $this->admin->isGranted('LIST')) {
+            throw new AccessDeniedException();
+        }
+
+        $linkTo = $this->getRequest()->query->get('linkTo', 'page');
+
+        // params for both templates
+        $tplName = null;
+        $tplParams = array(
+            'action' => 'browser',
+            'base_template' => $this->getTpl('layout'),
+            'linkTo' => $linkTo,
+        );
+
+        // page link
+        if ($linkTo == 'page') {
+            $pageList =  $this->loadPageList();
+
+            // se template values
+            $tplName = 'SymbioOrangeGateMediaBundle:MediaAdmin:pages.html.twig';
+            $tplParams['pages'] = $pageList;
+        }
+
+        // media file link
+        else {
+            $datagrid = $this->admin->getDatagrid();
+            $datagrid->setValue('context', null, $this->admin->getPersistentParameter('context'));
+            $datagrid->setValue('providerName', null, $this->admin->getPersistentParameter('provider'));
+
+            // Store formats
+            $formats = array();
+            foreach ($datagrid->getResults() as $media) {
+                $formats[$media->getId()] = $this->get('sonata.media.pool')->getFormatNamesByContext($media->getContext());
+            }
+
+            $formView = $datagrid->getForm()->createView();
+
+            // set the theme for the current Admin Form
+            $this->get('twig')->getExtension('form')->renderer->setTheme($formView, $this->admin->getFilterTheme());
+
+            // set template values
+            $tplName = $this->getTpl('browser');
+            $tplParams = array_merge($tplParams, array(
+                'form' => $formView,
+                'datagrid' => $datagrid,
+                'formats' => $formats,
+                'context_manager'
+            ));
+        }
+
+        // render template
+        return $this->render($tplName, $tplParams);
+    }
+
+
+    /**
      * {@inheritdoc}
      */
     public function listAction(Request $request = null)
@@ -74,5 +137,82 @@ class MediaAdminController extends Controller
             'currentSite'   => $currentSite,
             'csrf_token'    => $this->getCsrfToken('sonata.batch'),
         ));
+    }
+
+
+    /**
+     * Gets a template
+     * (this method is copy of exact same private method in parent class)
+     *
+     * @param  string $name
+     * @return string
+     */
+    protected function getTpl($name)
+    {
+        $templates = $this->container->getParameter('coop_tilleuls_ck_editor_sonata_media.configuration.templates');
+
+        if (isset($templates[$name])) {
+            return $templates[$name];
+        }
+
+        return null;
+    }
+
+
+    /**
+     * Loads lists of pages available that user can links to
+     * @return array
+     */
+    protected function loadPageList() {
+        $list = $this->get('doctrine')->getManager()->createQuery("
+			SELECT
+				p
+			FROM
+				SymbioOrangeGatePageBundle:Page p
+				INNER JOIN p.translations t
+			WHERE
+				    t.enabled = :enabled
+				AND p.parent IS NULL
+				AND t.locale = :locale
+				AND p.routeName NOT LIKE '_page_internal_%'
+				AND t.url NOT LIKE '%{%'
+		  	ORDER BY
+		  		p.position
+		")
+            ->setParameter('locale', $this->getRequest()->getLocale())
+            ->setParameter('enabled', true)
+            ->getResult()
+        ;
+
+        $pages = array();
+        foreach ($list as $page) {
+            $this->childWalker($page, $pages);
+        }
+        return $pages;
+    }
+
+
+    /**
+     * Builds list page from tree
+     * @param $page
+     * @param $choices
+     */
+    private function childWalker($page, &$choices)
+    {
+        if (
+            !$page->isInternal()
+            && strpos($page->getUrl(), '{') === FALSE
+        ) {
+            $parent = $page->getParent();
+            if ($parent && $parent->getParent()) {
+                $page->setName($parent->getName() . '/' . $page->getName());
+            }
+
+            $choices[$page->getId()] = $page;
+
+            foreach ($page->getChildren() as $child) {
+                $this->childWalker($child, $choices);
+            }
+        }
     }
 }
