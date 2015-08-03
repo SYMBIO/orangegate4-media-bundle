@@ -2,7 +2,7 @@
 
 namespace Symbio\OrangeGate\MediaBundle\Controller;
 
-use CoopTilleuls\Bundle\CKEditorSonataMediaBundle\Controller\MediaAdminController as Controller;
+use Sonata\MediaBundle\Controller\MediaAdminController as Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
