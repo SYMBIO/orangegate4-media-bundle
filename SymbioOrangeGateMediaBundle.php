@@ -18,6 +18,6 @@ class SymbioOrangeGateMediaBundle extends Bundle
      */
     public function getParent()
     {
-        return 'SonataMediaBundle';
+        return 'CoopTilleulsCKEditorSonataMediaBundle';
     }
 }
