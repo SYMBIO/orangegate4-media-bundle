@@ -1,0 +1,9 @@
+{% extends 'SymbioOrangeGateMediaBundle:MediaAdmin:_browserBase.html.twig' %}
+
+{% block list_table %}
+    <div class="list-group">
+        {% for page in pages %}
+            <a href="{{ app.request.baseUrl ~ page.url }}" class="select list-group-item">{{ page }}</a>
+        {% endfor %}
+    </div>
+{% endblock %}
