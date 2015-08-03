@@ -63,13 +63,8 @@ class MediaManager extends BaseEntityManager implements MediaManagerInterface
             ->select('m');
 
         if (isset($criteria['letter'])) {
-            $qb->andWhere($qb->expr()->like('m.name', ':name'))
+            $qb->andWhere($qb->expr()->like('COLLATE(m.name, utf8_bin)', 'CAST(:name, _utf8)'))
                ->setParameter('name', $criteria['letter'].'%');
-        }
-
-        if (isset($criteria['number'])) {
-            $qb->andWhere('REGEXP(m.name, :regexp) = true')
-               ->setParameter('regexp', '^[0-9].*');
         }
 
         if (isset($criteria['category'])) {
@@ -98,8 +93,10 @@ class MediaManager extends BaseEntityManager implements MediaManagerInterface
               m.name ASC
         ')->setParameter('category', $category);
 
+
+
         return array_unique(array_map(function($a) {
-            return ucfirst(substr($a['name'], 0, 1));
+            return ucfirst(mb_substr($a['name'], 0, 1, 'UTF-8'));
         }, $query->getResult()));
     }
 }
