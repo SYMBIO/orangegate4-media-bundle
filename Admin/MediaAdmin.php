@@ -34,6 +34,9 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
      */
     protected $sitePool;
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct($code, $class, $baseControllerName, Pool $pool, CategoryManagerInterface $categoryManager, ContextManagerInterface $contextManager, SitePool $sitePool)
     {
         parent::__construct($code, $class, $baseControllerName, $pool, $categoryManager);
@@ -45,17 +48,22 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
     /**
      * {@inheritdoc}
      */
+    protected function configureRoutes(\Sonata\AdminBundle\Route\RouteCollection $collection)
+    {
+        $collection->add('browser', 'browser');
+        $collection->add('upload', 'upload');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
     {
         if (!$childAdmin && !in_array($action, array('list'))) {
             return;
         }
 
-        $criteria = array(
-            'site' => $this->sitePool->getCurrentSite($this->getRequest())
-        );
-
-        foreach ($this->contextManager->findBy($criteria) as $context) {
+        foreach ($this->getContextList() as $context) {
             $menu->addChild(
                 $this->trans($context->getName()),
                 array('uri' => $this->generateUrl('list', array('context' => $context->getId(), 'category' => null, 'hide_context' => null)))
@@ -63,6 +71,23 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
         }
     }
 
+    /**
+     * Returns list of available contexts
+     *
+     * @return array
+     */
+    public function getContextList()
+    {
+        $criteria = array(
+            'site' => $this->sitePool->getCurrentSite($this->getRequest())
+        );
+
+        return $this->contextManager->findBy($criteria);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getPersistentParameters()
     {
         $parameters = parent::getPersistentParameters();

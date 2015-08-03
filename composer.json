@@ -14,7 +14,6 @@
     ],
     "require": {
         "sonata-project/media-bundle": "~2.4@dev",
-		"tilleuls/ckeditor-sonata-media-bundle": "~2.0@dev",
         "symbio/orangegate4-classification-bundle": "~1.0@dev"
     },
     "require-dev": {
