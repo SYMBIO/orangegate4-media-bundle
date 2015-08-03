@@ -1,7 +1,7 @@
 {# this template contains markup used in both pages and browser templates #}
 {% extends base_template %}
 
-{% set ckParameters = {'CKEditor': app.request.get('CKEditor'), 'CKEditorFuncNum': app.request.get('CKEditorFuncNum')} %}
+{% set ckParameters = {'CKEditor': app.request.get('CKEditor'), 'CKEditorFuncNum': app.request.get('CKEditorFuncNum'), 'linkTo': linkTo} %}
 
 
 {% block javascripts %}
@@ -30,8 +30,8 @@
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownLinkTo">
                     <li>
-                        <a href="{{ admin.generateUrl('browser', {'linkTo': 'page'}|merge(ckParameters)) }}">{{ 'label.link_to_page'|trans({}, 'SonataMediaBundle') }}</a>
-                        <a href="{{ admin.generateUrl('browser', {'linkTo': 'media'}|merge(ckParameters)) }}">{{ 'label.link_to_media'|trans({}, 'SonataMediaBundle') }}</a>
+                        <a href="{{ admin.generateUrl('browser', ckParameters|merge({'linkTo': 'page'})) }}">{{ 'label.link_to_page'|trans({}, 'SonataMediaBundle') }}</a>
+                        <a href="{{ admin.generateUrl('browser', ckParameters|merge({'linkTo': 'media'})) }}">{{ 'label.link_to_media'|trans({}, 'SonataMediaBundle') }}</a>
                     </li>
                 </ul>
             </div>

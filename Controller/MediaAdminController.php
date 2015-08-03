@@ -28,7 +28,7 @@ class MediaAdminController extends Controller
         $tplName = null;
         $tplParams = array(
             'action' => 'browser',
-            'base_template' => $this->getTpl('layout'),
+            'base_template' => 'SymbioOrangeGateMediaBundle::layout.html.twig',
             'linkTo' => $linkTo,
         );
 
@@ -36,7 +36,7 @@ class MediaAdminController extends Controller
         if ($linkTo == 'page') {
             $pageList =  $this->loadPageList();
 
-            // se template values
+            // set template values
             $tplName = 'SymbioOrangeGateMediaBundle:MediaAdmin:pages.html.twig';
             $tplParams['pages'] = $pageList;
         }
@@ -46,6 +46,12 @@ class MediaAdminController extends Controller
             $datagrid = $this->admin->getDatagrid();
             $datagrid->setValue('context', null, $this->admin->getPersistentParameter('context'));
             $datagrid->setValue('providerName', null, $this->admin->getPersistentParameter('provider'));
+
+            // transform context list to associative array
+            $contextList = array();
+            foreach ($this->admin->getContextList() as $context) {
+                $contextList[$context->getId()] = $context->getName();
+            }
 
             // Store formats
             $formats = array();
@@ -59,12 +65,12 @@ class MediaAdminController extends Controller
             $this->get('twig')->getExtension('form')->renderer->setTheme($formView, $this->admin->getFilterTheme());
 
             // set template values
-            $tplName = $this->getTpl('browser');
+            $tplName = 'SymbioOrangeGateMediaBundle:MediaAdmin:browser.html.twig';
             $tplParams = array_merge($tplParams, array(
                 'form' => $formView,
                 'datagrid' => $datagrid,
                 'formats' => $formats,
-                'context_manager'
+                'contextList' => $contextList,
             ));
         }
 
@@ -138,26 +144,6 @@ class MediaAdminController extends Controller
             'csrf_token'    => $this->getCsrfToken('sonata.batch'),
         ));
     }
-
-
-    /**
-     * Gets a template
-     * (this method is copy of exact same private method in parent class)
-     *
-     * @param  string $name
-     * @return string
-     */
-    protected function getTpl($name)
-    {
-        $templates = $this->container->getParameter('coop_tilleuls_ck_editor_sonata_media.configuration.templates');
-
-        if (isset($templates[$name])) {
-            return $templates[$name];
-        }
-
-        return null;
-    }
-
 
     /**
      * Loads lists of pages available that user can links to
