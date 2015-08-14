@@ -12,6 +12,15 @@
             $(".select").click(function (e) {
                 e.preventDefault();
                 window.opener.CKEDITOR.tools.callFunction({{ app.request.get('CKEditorFuncNum')|escape('js') }}, $(this).attr("href"));
+
+                // TODO better to rewrite CKEditor handler function to recognize link '{ path(..) }' as type <other>
+                // set protocol if specified
+                var protocol = $(this).data('protocol');
+                if (protocol !== undefined) {
+                    window.opener.CKEDITOR.dialog.getCurrent().setValueOf('info', 'protocol', protocol);
+                }
+
+                // close media window
                 window.close();
             });
         });

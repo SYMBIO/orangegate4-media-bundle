@@ -3,7 +3,7 @@
 {% block list_table %}
     <div class="list-group">
         {% for page in pages %}
-            <a href="{{ '{{' }} path({{ page.id }}) {{ '}}' }}" class="select list-group-item">{{ page }}</a>
+            <a href="{{ '{{' }} url({{ page.id }}) {{ '}}' }}" class="select list-group-item" data-protocol="">{{ page }}</a>
         {% endfor %}
     </div>
 {% endblock %}
