@@ -145,6 +145,30 @@ class MediaAdminController extends Controller
         ));
     }
 
+
+    public function uploadAction()
+    {
+        if (false === $this->admin->isGranted('CREATE')) {
+            throw new AccessDeniedException();
+        }
+        $mediaManager = $this->get('sonata.media.manager.media');
+        $request = $this->getRequest();
+        $provider = $request->get('provider');
+        $file = $request->files->get('upload');
+        if (!$request->isMethod('POST') || !$provider || null === $file) {
+            throw $this->createNotFoundException();
+        }
+        $context = $request->get('context', $this->get('sonata.media.pool')->getDefaultContext());
+        $media = $mediaManager->create();
+        $media->setBinaryContent($file);
+        $mediaManager->save($media, $context, $provider);
+        $this->admin->createObjectSecurity($media);
+        return $this->render('SymbioOrangeGateMediaBundle:MediaAdmin:upload.html.twig', array(
+            'action' => 'list',
+            'object' => $media
+        ));
+    }
+
     /**
      * Loads lists of pages available that user can links to
      * @return array
