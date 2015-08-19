@@ -82,7 +82,7 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
             'site' => $this->sitePool->getCurrentSite($this->getRequest())
         );
 
-        return $this->contextManager->findBy($criteria);
+        return $this->contextManager->findBy($criteria, array('name' => 'asc'));
     }
 
     /**
