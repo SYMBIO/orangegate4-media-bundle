@@ -129,6 +129,11 @@ class MediaAdminController extends Controller
             }
         }
 
+        // filters by provider name, e.g. sonata.media.provider.file
+        if ($request->get('provider')) {
+            $datagrid->setValue('providerName', null, $request->get('provider'));
+        }
+
         $formView = $datagrid->getForm()->createView();
 
         // set the theme for the current Admin Form
