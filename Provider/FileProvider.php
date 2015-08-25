@@ -4,6 +4,7 @@ namespace Symbio\OrangeGate\MediaBundle\Provider;
 
 use Cocur\Slugify\Slugify;
 use Gaufrette\Filesystem;
+use Doctrine\ORM\EntityManager;
 use Sonata\MediaBundle\CDN\CDNInterface;
 use Sonata\MediaBundle\Generator\GeneratorInterface;
 use Sonata\MediaBundle\Thumbnail\ThumbnailInterface;
@@ -20,8 +21,11 @@ class FileProvider extends BaseFileProvider
 
     protected $allowedMimeTypes;
 
-    public function __construct($name, Filesystem $filesystem, CDNInterface $cdn, GeneratorInterface $pathGenerator, ThumbnailInterface $thumbnail, array $allowedExtensions = array(), array $allowedMimeTypes = array(), MetadataBuilderInterface $metadata = null)
+    protected $entityManager;
+
+    public function __construct($name, Filesystem $filesystem, CDNInterface $cdn, GeneratorInterface $pathGenerator, ThumbnailInterface $thumbnail, EntityManager $entityManager, array $allowedExtensions = array(), array $allowedMimeTypes = array(), MetadataBuilderInterface $metadata = null)
     {
+        $this->entityManager = $entityManager;
         parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail,$allowedExtensions, $allowedMimeTypes, $metadata);
         $this->allowedMimeTypes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
         $this->allowedMimeTypes[] = 'image/jpeg';
@@ -53,10 +57,30 @@ class FileProvider extends BaseFileProvider
      */
     protected function generateReferenceName(MediaInterface $media)
     {
+        return uniqid().'_'.$this->generateReferenceSlug($media).'.'.$media->getExtension();
+    }
+
+    protected function generateReferenceSlug(MediaInterface $media)
+    {
         $filename = $media->getMetadataValue('filename');
         $extension = substr($filename,strrpos($filename,'.')+1);
-        $filenameSlug = (new Slugify())->slugify(substr($filename,0,strlen($filename)-strlen($extension)));
-        return uniqid().'_'.$filenameSlug.'.'.$extension;
+        return (new Slugify())->slugify(substr($filename,0,strlen($filename)-strlen($extension)));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function generateThumbnails(MediaInterface $media)
+    {
+        $referenceSlug = $this->generateReferenceSlug($media);
+        if (strpos($media->getProviderReference(), $referenceSlug) === false && ($referenceFile = $this->getReferenceFile($media)) && $referenceFile->exists()) {
+            $referenceName = $this->generateReferenceName($media);
+            $url = sprintf('%s/%s', $this->generatePath($media), $referenceName);
+            $out = $this->getFilesystem()->get($url, true);
+            $out->setContent($referenceFile->getContent(), $this->metadata->get($media, $out->getName()));
+            $media->setProviderReference($referenceName);
+            $this->entityManager->flush();
+        }
     }
 
     /**

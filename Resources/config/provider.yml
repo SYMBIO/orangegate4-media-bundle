@@ -2,8 +2,15 @@ parameters:
     sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\FileProvider
 #    sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\DownloadProvider
 
+services:
+    sonata.media.provider.file:
+        class: %sonata.media.provider.file.class%
+        tags:
+            - { name: sonata.media.provider }
+        arguments: [sonata.media.provider.file, @sonata.media.filesystem.local, @sonata.media.cdn.server, @sonata.media.generator.default, @sonata.media.thumbnail.format, @doctrine.orm.entity_manager, [], [], @sonata.media.metadata.proxy]
+        calls:
+            - [ setTemplates, [{helper_thumbnail: SonataMediaBundle:Provider:thumbnail.html.twig, helper_view: SonataMediaBundle:Provider:view_file.html.twig}] ]
 
-# services:
 #     orangegate.media.provider.download:
 #         class: %sonata.media.provider.file.class%
 #         tags:
