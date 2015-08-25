@@ -2,6 +2,7 @@
 
 namespace Symbio\OrangeGate\MediaBundle\Provider;
 
+use Cocur\Slugify\Slugify;
 use Gaufrette\Filesystem;
 use Sonata\MediaBundle\CDN\CDNInterface;
 use Sonata\MediaBundle\Generator\GeneratorInterface;
@@ -33,6 +34,7 @@ class FileProvider extends BaseFileProvider
         $this->allowedExtensions[] = 'gif';
         $this->allowedExtensions[] = 'bmp';
     }
+
 	/**
 	 * {@inheritdoc}
 	 */
@@ -45,6 +47,17 @@ class FileProvider extends BaseFileProvider
 			return sprintf('/bundles/sonatamedia/files/%s/file.png', $format != 'admin' ? $format : '256');
 		}
 	}
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function generateReferenceName(MediaInterface $media)
+    {
+        $filename = $media->getMetadataValue('filename');
+        $extension = substr($filename,strrpos($filename,'.')+1);
+        $filenameSlug = (new Slugify())->slugify(substr($filename,0,strlen($filename)-strlen($extension)));
+        return uniqid().'_'.$filenameSlug.'.'.$extension;
+    }
 
     /**
      * {@inheritdoc}
