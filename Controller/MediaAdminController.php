@@ -3,6 +3,7 @@
 namespace Symbio\OrangeGate\MediaBundle\Controller;
 
 use Sonata\MediaBundle\Controller\MediaAdminController as Controller;
+use Symbio\OrangeGate\MediaBundle\Admin\MediaAdmin;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -86,6 +87,13 @@ class MediaAdminController extends Controller
     {
         if (false === $this->admin->isGranted('LIST')) {
             throw new AccessDeniedException();
+        }
+
+        if ($this->admin instanceof MediaAdmin && $request->isXmlHttpRequest()) {
+            $this->admin->setDatagridValues(array(
+                '_sort_by' => 'id',
+                '_sort_order' => 'desc'
+            ));
         }
 
         if ($listMode = $request->get('_list_mode', 'mosaic')) {
