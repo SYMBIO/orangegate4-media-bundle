@@ -12,6 +12,12 @@ use Symbio\OrangeGate\PageBundle\Entity\SitePool;
 
 class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
 {
+    protected $datagridValues = array(
+        '_page' => 1,
+        '_sort_by' => 'name',
+        '_sort_order' => 'asc'
+    );
+
     protected $listModes = array(
 //        'list' => array(
 //            'class' => 'fa fa-list fa-fw',
@@ -124,5 +130,18 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
             'category' => $categoryId,
             'hide_context' => (bool)$this->getRequest()->get('hide_context')
         ));
+    }
+
+    /**
+     * Set datagrid values used before datagrid build
+     *
+     * @param $values array
+     * @return AdminInterface
+     */
+    public function setDatagridValues(array $values)
+    {
+        $this->datagridValues = array_merge($this->datagridValues, $values);
+
+        return $this;
     }
 }
