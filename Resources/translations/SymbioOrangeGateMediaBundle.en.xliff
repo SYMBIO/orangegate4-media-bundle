@@ -62,6 +62,14 @@
                 <source>error.whitelist</source>
                 <target>Unsupported file format.</target>
             </trans-unit>
+            <trans-unit id="label.link_to_page">
+                <source>label.link_to_page</source>
+                <target>Page</target>
+            </trans-unit>
+            <trans-unit id="label.link_to_media">
+                <source>label.link_to_media</source>
+                <target>Media</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

@@ -74,6 +74,14 @@
                 <source>error.whitelist</source>
                 <target>Nepodporovaný formát souboru.</target>
             </trans-unit>
+            <trans-unit id="label.link_to_page">
+                <source>label.link_to_page</source>
+                <target>Stránky</target>
+            </trans-unit>
+            <trans-unit id="label.link_to_media">
+                <source>label.link_to_media</source>
+                <target>Media</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
