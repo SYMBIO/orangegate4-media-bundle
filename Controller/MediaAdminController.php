@@ -89,13 +89,6 @@ class MediaAdminController extends Controller
             throw new AccessDeniedException();
         }
 
-        if ($this->admin instanceof MediaAdmin && $request->isXmlHttpRequest()) {
-            $this->admin->setDatagridValues(array(
-                '_sort_by' => 'id',
-                '_sort_order' => 'desc'
-            ));
-        }
-
         if ($listMode = $request->get('_list_mode', 'mosaic')) {
             $this->admin->setListMode($listMode);
         }
