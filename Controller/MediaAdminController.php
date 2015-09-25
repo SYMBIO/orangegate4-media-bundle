@@ -17,13 +17,13 @@ class MediaAdminController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws AccessDeniedException
      */
-    public function browserAction()
+    public function browserAction(Request $request)
     {
         if (false === $this->admin->isGranted('LIST')) {
             throw new AccessDeniedException();
         }
 
-        $linkTo = $this->getRequest()->query->get('linkTo', 'page');
+        $linkTo = $request->query->get('linkTo', 'page');
 
         // params for both templates
         $tplName = null;
