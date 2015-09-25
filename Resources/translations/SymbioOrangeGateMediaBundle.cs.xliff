@@ -82,6 +82,18 @@
                 <source>label.link_to_media</source>
                 <target>Media</target>
             </trans-unit>
+            <trans-unit id="Images">
+                <source>Images</source>
+                <target>Obrázky</target>
+            </trans-unit>
+            <trans-unit id="Gallery">
+                <source>Gallery</source>
+                <target>Galerie</target>
+            </trans-unit>
+            <trans-unit id="Options">
+                <source>Options</source>
+                <target>Nastavení</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>

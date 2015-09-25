@@ -2,16 +2,14 @@
 
 namespace Symbio\OrangeGate\MediaBundle\Entity;
 
-use Sonata\MediaBundle\Entity\BaseGalleryHasMedia as BaseGalleryHasMedia;
 use Doctrine\ORM\Mapping as ORM;
-use Sonata\MediaBundle\Model\GalleryInterface;
-use Sonata\MediaBundle\Model\MediaInterface;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="media__gallery_media")
  */
-class GalleryHasMedia extends BaseGalleryHasMedia
+class GalleryHasMedia
 {
 
     /**
@@ -23,14 +21,39 @@ class GalleryHasMedia extends BaseGalleryHasMedia
     protected $id;
 
     /**
-     * @var \Symbio\OrangeGate\MediaBundle\Entity\Gallery
+     * @ORM\ManyToOne(targetEntity="Media", cascade={"persist"})
+     * @ORM\JoinColumn(name="media_id", referencedColumnName="id", nullable=true)
+     */
+    protected $media;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="galleryHasMedias")
+     * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id", nullable=true)
      */
     protected $gallery;
 
     /**
-     * @var \Symbio\OrangeGate\MediaBundle\Entity\Media
+     * @ORM\Column(type="integer")
      */
-    protected $media;
+    protected $position;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    protected $enabled = true;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="update")
+     */
+    protected $updatedAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     * @Gedmo\Timestampable(on="create")
+     */
+    protected $createdAt;
+
 
     /**
      * Get id
@@ -48,7 +71,7 @@ class GalleryHasMedia extends BaseGalleryHasMedia
      * @param \Symbio\OrangeGate\MediaBundle\Entity\Gallery $gallery
      * @return GalleryHasMedia
      */
-    public function setGallery(GalleryInterface $gallery = null)
+    public function setGallery(Gallery $gallery = null)
     {
         $this->gallery = $gallery;
 
@@ -71,7 +94,7 @@ class GalleryHasMedia extends BaseGalleryHasMedia
      * @param \Symbio\OrangeGate\MediaBundle\Entity\Media $media
      * @return GalleryHasMedia
      */
-    public function setMedia(MediaInterface $media = null)
+    public function setMedia(Media $media = null)
     {
         $this->media = $media;
 
@@ -87,4 +110,95 @@ class GalleryHasMedia extends BaseGalleryHasMedia
     {
         return $this->media;
     }
+
+    /**
+     * Get position
+     *
+     * @return mixed
+     */
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
+    /**
+     * Set position
+     *
+     * @param mixed $position
+     * @return GalleryHasMedia
+     */
+    public function setPosition($position)
+    {
+        $this->position = $position;
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return mixed
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param mixed $enabled
+     * @return GalleryHasMedia
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return mixed
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param mixed $updatedAt
+     * @return GalleryHasMedia
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param mixed $createdAt
+     * @return GalleryHasMedia
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
+
+
+
 }
