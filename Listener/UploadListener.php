@@ -6,9 +6,7 @@ use Oneup\UploaderBundle\Event\PostPersistEvent;
 use Sonata\MediaBundle\Model\MediaManagerInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 use Sonata\MediaBundle\Provider\Pool;
-use Symbio\OrangeGate\MediaBundle\Admin\MediaAdmin;
 use Symbio\OrangeGate\MediaBundle\Entity\Media;
-use Symbio\OrangeGate\MediaBundle\SymbioOrangeGateMediaBundle;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UploadListener
@@ -37,7 +35,11 @@ class UploadListener
         $context = $request->get('context');
         $categoryId = $request->get('category');
 
-        $category = $this->categoryManager->find($categoryId);
+        if ($categoryId) {
+            $category = $this->categoryManager->find($categoryId);
+        } else {
+            $category = $this->getRootCategory($context);
+        }
 
         $file = $event->getFile();
 
@@ -68,4 +70,21 @@ class UploadListener
 
         @unlink($file->getPathname());
     }
+
+    /**
+     * @param string $context
+     *
+     * @return mixed
+     */
+    protected function getRootCategory($context)
+    {
+        $rootCategories = $this->categoryManager->getRootCategories(false);
+
+        if (!array_key_exists($context, $rootCategories)) {
+            throw new \RuntimeException(sprintf('There is no main category related to context: %s', $context));
+        }
+
+        return $rootCategories[$context];
+    }
+
 }

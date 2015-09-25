@@ -48,9 +48,10 @@ class GalleryAdmin extends BaseAdmin
             ->with('Gallery')
             ->add('galleryHasMedias', 'orangegate_type_media_collection', array(
                 'label' => 'Images',
-                'required' => false), array(
-                'link_parameters' => array('context' => 'gallery'),
+                'required' => false,
+                'context' => 'gallery',
                 'media_type' => 'image',
+            ), array(
                 'sortable' => 'position'
             ))
             ->end()

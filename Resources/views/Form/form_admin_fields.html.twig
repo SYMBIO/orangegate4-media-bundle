@@ -100,7 +100,9 @@
                             dropZone: $('#field_container_{{ id }}'),
                             formData: {
                                 context: '{{ context }}',
-                                category: '{{ category }}',
+                                {% if category is defined and category -%}
+                                    category: '{{ category }}',
+                                {% endif -%}
                                 mediaType: '{{ media_type }}'
                             },
                             progressall: function (e) {

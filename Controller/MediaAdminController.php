@@ -152,13 +152,12 @@ class MediaAdminController extends Controller
     }
 
 
-    public function uploadAction()
+    public function uploadAction(Request $request)
     {
         if (false === $this->admin->isGranted('CREATE')) {
             throw new AccessDeniedException();
         }
         $mediaManager = $this->get('sonata.media.manager.media');
-        $request = $this->getRequest();
         $provider = $request->get('provider');
         $file = $request->files->get('upload');
         if (!$request->isMethod('POST') || !$provider || null === $file) {
