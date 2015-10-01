@@ -43,6 +43,11 @@ class SymbioOrangeGateMediaExtension extends Extension implements PrependExtensi
             ->replaceArgument(5, array_map('strtolower', $config['providers']['image']['allowed_extensions']))
             ->replaceArgument(6, $config['providers']['image']['allowed_mime_types'])
         ;
+
+        $container->getDefinition('sonata.media.provider.file')
+            ->replaceArgument(5, $config['providers']['file']['allowed_extensions'])
+            ->replaceArgument(6, $config['providers']['file']['allowed_mime_types'])
+        ;
     }
 
     public function prepend(ContainerBuilder $container)
