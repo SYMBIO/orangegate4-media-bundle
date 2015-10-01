@@ -48,7 +48,7 @@ class FileProvider extends BaseFileProvider
      */
     protected function generateReferenceName(MediaInterface $media)
     {
-        return uniqid().'_'.$this->generateReferenceSlug($media).'.'.$media->getExtension();
+        return uniqid().'_'.$this->generateReferenceSlug($media).'.'.$media->getBinaryContent()->guessExtension();
     }
 
     protected function generateReferenceSlug(MediaInterface $media)
