@@ -34,3 +34,13 @@ services:
       class: Symbio\OrangeGate\MediaBundle\Uploader\ErrorHandler\UploaderErrorHandler
       arguments: [ @translator ]
 
+    orangegate.media.twig.extension:
+        class: Symbio\OrangeGate\MediaBundle\Twig\Extension\MediaExtension
+        arguments: [@sonata.media.pool, @sonata.media.manager.media, @router]
+        tags:
+            - { name: twig.extension }
+
+    orangegate.media.formatter.twig:
+        class: Symbio\OrangeGate\MediaBundle\Twig\Extension\FormatterMediaExtension
+        arguments: [@orangegate.media.twig.extension]
+

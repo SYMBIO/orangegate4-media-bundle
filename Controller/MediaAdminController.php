@@ -35,7 +35,7 @@ class MediaAdminController extends Controller
 
         // page link
         if ($linkTo == 'page') {
-            $pageList =  $this->loadPageList();
+            $pageList =  $this->loadPageList($request->getLocale());
 
             // set template values
             $tplName = 'SymbioOrangeGateMediaBundle:MediaAdmin:pages.html.twig';
@@ -178,7 +178,7 @@ class MediaAdminController extends Controller
      * Loads lists of pages available that user can links to
      * @return array
      */
-    protected function loadPageList() {
+    protected function loadPageList($locale) {
         $list = $this->get('doctrine')->getManager()->createQuery("
 			SELECT
 				p
@@ -194,7 +194,7 @@ class MediaAdminController extends Controller
 		  	ORDER BY
 		  		p.position
 		")
-            ->setParameter('locale', $this->getRequest()->getLocale())
+            ->setParameter('locale', $locale)
             ->setParameter('enabled', true)
             ->getResult()
         ;
