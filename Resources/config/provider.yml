@@ -1,5 +1,6 @@
 parameters:
     sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\FileProvider
+    sonata.media.provider.image.class: Symbio\OrangeGate\MediaBundle\Provider\ImageProvider
 #    sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\DownloadProvider
 
 services:
