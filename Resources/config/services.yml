@@ -13,10 +13,16 @@ services:
       class: Symbio\OrangeGate\MediaBundle\Admin\GalleryAdmin
       tags:
         - { name: sonata.admin, manager_type: orm, group: Content, label: galleries }
-      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Gallery, %sonata.media.admin.gallery.controller%, @sonata.media.pool]
+      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Gallery,SymbioOrangeGateMediaBundle:GalleryAdmin, @sonata.media.pool]
       calls:
         - [ setTranslationDomain, [%sonata.media.admin.media.translation_domain%] ]
-        - [ setTemplates, [{list: SonataMediaBundle:GalleryAdmin:list.html.twig}] ]
+        - [ setTemplates, [{list: SymbioOrangeGateMediaBundle:GalleryAdmin:list.html.twig}] ]
+
+    orangegate.media.admin.galleryhasmedia:
+      class: Symbio\OrangeGate\MediaBundle\Admin\GalleryHasMediaAdmin
+      tags:
+        - { name: sonata.admin, manager_type: orm, audit: false, group: Content, label: gallery_medias }
+      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia, null, @sonata.media.pool]
 
     orangegate.admin.upload_listener:
         class: Symbio\OrangeGate\MediaBundle\Listener\UploadListener

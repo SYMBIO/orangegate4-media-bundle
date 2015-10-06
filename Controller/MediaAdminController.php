@@ -17,7 +17,7 @@ class MediaAdminController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws AccessDeniedException
      */
-    public function browserAction(Request $request = null)
+    public function browserAction(Request $request)
     {
         if (false === $this->admin->isGranted('LIST')) {
             throw new AccessDeniedException();
@@ -152,7 +152,7 @@ class MediaAdminController extends Controller
     }
 
 
-    public function uploadAction(Request $request = null)
+    public function uploadAction(Request $request)
     {
         if (false === $this->admin->isGranted('CREATE')) {
             throw new AccessDeniedException();

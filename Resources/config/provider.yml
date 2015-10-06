@@ -1,6 +1,7 @@
 parameters:
     sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\FileProvider
     sonata.media.provider.image.class: Symbio\OrangeGate\MediaBundle\Provider\ImageProvider
+    sonata.media.thumbnail.format: Symbio\OrangeGate\MediaBundle\Thumbnail\FormatThumbnail
 #    sonata.media.provider.file.class: Symbio\OrangeGate\MediaBundle\Provider\DownloadProvider
 
 services:
@@ -8,9 +9,17 @@ services:
         class: %sonata.media.provider.file.class%
         tags:
             - { name: sonata.media.provider }
-        arguments: [sonata.media.provider.file, @sonata.media.filesystem.local, @sonata.media.cdn.server, @sonata.media.generator.default, @sonata.media.thumbnail.format, @doctrine.orm.entity_manager, [], [], @sonata.media.metadata.proxy]
+        arguments: [sonata.media.provider.file, @sonata.media.filesystem.local, @sonata.media.cdn.server, @sonata.media.generator.default, @sonata.media.thumbnail.format, [], [], @sonata.media.metadata.proxy, @doctrine.orm.entity_manager]
         calls:
             - [ setTemplates, [{helper_thumbnail: SonataMediaBundle:Provider:thumbnail.html.twig, helper_view: SonataMediaBundle:Provider:view_file.html.twig}] ]
+
+    sonata.media.provider.image:
+        class: %sonata.media.provider.image.class%
+        tags:
+            - { name: sonata.media.provider }
+        arguments: [sonata.media.provider.image, @sonata.media.filesystem.local, @sonata.media.cdn.server, @sonata.media.generator.default, @sonata.media.thumbnail.format, [], [], @sonata.media.adapter.image.gd]
+        calls:
+            - [ setTemplates, [{helper_thumbnail: SonataMediaBundle:Provider:thumbnail.html.twig, helper_view: SonataMediaBundle:Provider:view_image.html.twig}] ]
 
 #     orangegate.media.provider.download:
 #         class: %sonata.media.provider.file.class%

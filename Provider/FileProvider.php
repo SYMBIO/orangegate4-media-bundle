@@ -23,20 +23,11 @@ class FileProvider extends BaseFileProvider
 
     protected $entityManager;
 
-    public function __construct($name, Filesystem $filesystem, CDNInterface $cdn, GeneratorInterface $pathGenerator, ThumbnailInterface $thumbnail, EntityManager $entityManager, array $allowedExtensions = array(), array $allowedMimeTypes = array(), MetadataBuilderInterface $metadata = null)
+    public function __construct($name, Filesystem $filesystem, CDNInterface $cdn, GeneratorInterface $pathGenerator, ThumbnailInterface $thumbnail, array $allowedExtensions = array(), array $allowedMimeTypes = array(), MetadataBuilderInterface $metadata = null, EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail,$allowedExtensions, $allowedMimeTypes, $metadata);
-        $this->allowedMimeTypes[] = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-        $this->allowedMimeTypes[] = 'image/jpeg';
-        $this->allowedMimeTypes[] = 'image/png';
-        $this->allowedMimeTypes[] = 'image/gif';
-        $this->allowedMimeTypes[] = 'image/bmp';
-        $this->allowedExtensions[] = 'jpeg';
-        $this->allowedExtensions[] = 'jpg';
-        $this->allowedExtensions[] = 'png';
-        $this->allowedExtensions[] = 'gif';
-        $this->allowedExtensions[] = 'bmp';
+
+        parent::__construct($name, $filesystem, $cdn, $pathGenerator, $thumbnail, $allowedExtensions, $allowedMimeTypes, $metadata);
     }
 
 	/**
@@ -57,7 +48,7 @@ class FileProvider extends BaseFileProvider
      */
     protected function generateReferenceName(MediaInterface $media)
     {
-        return uniqid().'_'.$this->generateReferenceSlug($media).'.'.$media->getExtension();
+        return uniqid().'_'.$this->generateReferenceSlug($media).'.'.$media->getBinaryContent()->guessExtension();
     }
 
     protected function generateReferenceSlug(MediaInterface $media)
@@ -65,22 +56,6 @@ class FileProvider extends BaseFileProvider
         $filename = $media->getMetadataValue('filename');
         $extension = substr($filename,strrpos($filename,'.')+1);
         return (new Slugify())->slugify(substr($filename,0,strlen($filename)-strlen($extension)));
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function generateThumbnails(MediaInterface $media)
-    {
-        $referenceSlug = $this->generateReferenceSlug($media);
-        if (strpos($media->getProviderReference(), $referenceSlug) === false && ($referenceFile = $this->getReferenceFile($media)) && $referenceFile->exists()) {
-            $referenceName = $this->generateReferenceName($media);
-            $url = sprintf('%s/%s', $this->generatePath($media), $referenceName);
-            $out = $this->getFilesystem()->get($url, true);
-            $out->setContent($referenceFile->getContent(), $this->metadata->get($media, $out->getName()));
-            $media->setProviderReference($referenceName);
-            $this->entityManager->flush();
-        }
     }
 
     /**

@@ -429,6 +429,30 @@
                 <source>related_objects</source>
                 <target>Související objekty</target>
             </trans-unit>
+            <trans-unit id="Images">
+                <source>Images</source>
+                <target>Obrázky</target>
+            </trans-unit>
+            <trans-unit id="Gallery">
+                <source>Gallery</source>
+                <target>Galerie</target>
+            </trans-unit>
+            <trans-unit id="General">
+                <source>General</source>
+                <target>Obecné</target>
+            </trans-unit>
+            <trans-unit id="galleries">
+                <source>galleries</source>
+                <target>Galerie</target>
+            </trans-unit>
+            <trans-unit id="gallery_medias">
+                <source>gallery_medias</source>
+                <target>Obrázky</target>
+            </trans-unit>
+            <trans-unit id="Gallery List">
+                <source>Gallery List</source>
+                <target>Galerie</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
