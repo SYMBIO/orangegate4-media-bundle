@@ -44,9 +44,30 @@ class MediaAdminController extends Controller
 
         // media file link
         else {
+            $categoryManager = $this->container->get('sonata.classification.manager.category');
+
+            $currentContext = $this->admin->getPersistentParameter('context');
+            $currentCategory = $this->admin->getPersistentParameter('category');
+            $rootCategory = $categoryManager->getRootCategory($currentContext);
+
+            $contextInCategory = $categoryManager->findBy(array(
+                'id'      => (int) $request->get('category'),
+                'context' => $currentContext
+            ));
+
+            // set filters for datagrid
             $datagrid = $this->admin->getDatagrid();
-            $datagrid->setValue('context', null, $this->admin->getPersistentParameter('context'));
+            $datagrid->setValue('context', null, $currentContext);
             $datagrid->setValue('providerName', null, $this->admin->getPersistentParameter('provider'));
+
+            // make sure, that category is selected and that it belongs to current context
+            if (!$currentCategory || empty($contextInCategory)) {
+                // if not, mark as selected category context root category
+                $currentCategory = $rootCategory;
+            }
+
+            // set selected category
+            $datagrid->setValue('category', null, $currentCategory);
 
             // transform context list to associative array
             $contextList = array();
@@ -62,9 +83,6 @@ class MediaAdminController extends Controller
 
             $formView = $datagrid->getForm()->createView();
 
-            // set the theme for the current Admin Form
-            $this->get('twig')->getExtension('form')->renderer->setTheme($formView, $this->admin->getFilterTheme());
-
             // set template values
             $tplName = 'SymbioOrangeGateMediaBundle:MediaAdmin:browser.html.twig';
             $tplParams = array_merge($tplParams, array(
@@ -72,6 +90,8 @@ class MediaAdminController extends Controller
                 'datagrid' => $datagrid,
                 'formats' => $formats,
                 'contextList' => $contextList,
+                'rootCategory' => $rootCategory,
+                'currentCategory' => $categoryManager->find($currentCategory),
             ));
         }
 
