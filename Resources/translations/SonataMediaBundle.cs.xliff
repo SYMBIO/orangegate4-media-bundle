@@ -226,9 +226,17 @@
                 <source>label.description</source>
                 <target>Popis</target>
             </trans-unit>
+            <trans-unit id="label.select_category">
+                <source>label.select_category</source>
+                <target>Kategorie: </target>
+            </trans-unit>
             <trans-unit id="label.select_context">
                 <source>label.select_context</source>
                 <target>Kontext: </target>
+            </trans-unit>
+            <trans-unit id="label.select_link_type">
+                <source>label.select_link_type</source>
+                <target>Typ odkazu: </target>
             </trans-unit>
             <trans-unit id="label.select_provider">
                 <source>label.select_provider</source>
@@ -276,6 +284,14 @@
             <trans-unit id="link.all_providers">
                 <source>link.all_providers</source>
                 <target>Vše</target>
+            </trans-unit>
+            <trans-unit id="label.link_to_page">
+                <source>label.link_to_page</source>
+                <target>Stránky</target>
+            </trans-unit>
+            <trans-unit id="label.link_to_media">
+                <source>label.link_to_media</source>
+                <target>Media</target>
             </trans-unit>
             <trans-unit id="link.test_protected_url">
                 <source>link.test_protected_url</source>
