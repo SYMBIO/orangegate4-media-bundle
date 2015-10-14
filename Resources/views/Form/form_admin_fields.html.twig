@@ -27,25 +27,18 @@
             {% if sonata_admin.field_description.associationadmin.hasroute('create') and sonata_admin.field_description.associationadmin.isGranted('CREATE') and (btn_upload_new or btn_upload_new_file) and btn_list %}
                 <span id="field_actions_{{ id }}" class="field_actions">
                     {% if form.vars.media_type == 'image' %}
-                    <span
-                        class="btn btn-success btn-sm btn-outline sonata-ba-action"
-                        title="{{ btn_upload_new|trans({}, btn_catalogue) }}"
-                        style="position:relative"
-                        >
-                        <i class="fa fa-upload"></i>
-                        <span>{{ btn_upload_new|trans({}, btn_catalogue) }}</span>
+                        <span class="btn btn-success btn-sm btn-outline sonata-ba-action" title="{{ btn_upload_new|trans({}, btn_catalogue) }}" style="position:relative">
+                            <i class="fa fa-upload"></i>
+                            <span>{{ btn_upload_new|trans({}, btn_catalogue) }}</span>
                             <input id="{{ id }}_files" type="file" name="{{ id }}_files[]" data-url="{{ oneup_uploader_endpoint('media_image') }}" multiple="multiple" style="position:absolute;top:0;right:0;opacity:0;left:0;bottom:0;cursor:pointer;width:100%;" />
-                        {% else %}
-                    <span
-                        class="btn btn-success btn-sm btn-outline sonata-ba-action"
-                        title="{{ btn_upload_new_file|trans({}, btn_catalogue) }}"
-                        style="position:relative"
-                        >
-                        <i class="fa fa-upload"></i>
-                        <span>{{ btn_upload_new_file|trans({}, btn_catalogue) }}</span>
+                        </span>
+                    {% else %}
+                        <span class="btn btn-success btn-sm btn-outline sonata-ba-action" title="{{ btn_upload_new_file|trans({}, btn_catalogue) }}" style="position:relative">
+                            <i class="fa fa-upload"></i>
+                            <span>{{ btn_upload_new_file|trans({}, btn_catalogue) }}</span>
                             <input id="{{ id }}_files" type="file" name="{{ id }}_files[]" data-url="{{ oneup_uploader_endpoint('media_file') }}" multiple="multiple" style="position:absolute;top:0;right:0;opacity:0;left:0;bottom:0;cursor:pointer;width:100%;" />
-                        {% endif %}
-                    </span>
+                        </span>
+                    {% endif %}
                     <a  href="{{ media_admin.generateUrl('list', sonata_admin.field_description.getOption('link_parameters', {})) }}"
                         onclick="return start_field_dialog_form_list_{{ id }}(this);"
                         class="btn btn-info btn-sm btn-outline sonata-ba-action"
