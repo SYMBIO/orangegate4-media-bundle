@@ -119,12 +119,10 @@ class MediaExtension extends \Twig_Extension
      */
     public function imageFilter($content)
     {
-        $temporaryImageUrl = substr($this->router->generate('orangegate_media_show', array('id' => 1)),0,-1);
-        return preg_replace_callback(
+        $temporaryImageUrl = str_replace('/app_dev.php', '', substr($this->router->generate('orangegate_media_show', array('id' => 1)), 0, -1));
+        return preg_replace(
             '|'.$temporaryImageUrl.'(\d+)(/(.+)([\'"]))?|',
-            function ($matches) {
-                return $this->path($matches[1], isset($matches[3]) && $matches[3] ? $matches[3] : 'reference').(isset($matches[4]) && $matches[4] ? $matches[4] : '');
-            },
+            substr($this->router->generate('sonata_media_download', array('id' => '1' )), 0, -1).'$1',
             $content
         );
     }
