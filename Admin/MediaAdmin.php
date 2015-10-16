@@ -9,6 +9,7 @@ use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\MediaBundle\Provider\Pool;
 use Symbio\OrangeGate\PageBundle\Entity\SitePool;
+use Sonata\AdminBundle\Datagrid\ListMapper;
 
 class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
 {
@@ -143,5 +144,19 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
         $this->datagridValues = array_merge($this->datagridValues, $values);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function configureListFields(ListMapper $listMapper)
+    {
+        $listMapper
+            ->addIdentifier('name')
+            ->add('description')
+            ->add('enabled')
+            ->add('size')
+            ->add('createdAt')
+        ;
     }
 }

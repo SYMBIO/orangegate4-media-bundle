@@ -53,7 +53,7 @@
             <strong>{{ "label.select_provider"|trans({}, 'SonataMediaBundle') }} </strong>
             <button class="btn btn-default dropdown-toggle" type="button" id="dropdownProvider" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
 
-                {% if (persistent_parameters.provider is defined) and ( not persistent_parameters.provider) %}
+                {% if persistent_parameters.provider is defined and persistent_parameters.provider %}
                     {{ persistent_parameters.provider|trans({}, 'SonataMediaBundle') }}
                 {% else %}
                     {{ "link.all_providers"|trans({}, 'SonataMediaBundle') }}
@@ -61,6 +61,9 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownContext">
+                <li>
+                    <a href="{{ admin.generateUrl('browser', {'context': persistent_parameters.context, 'provider': '', 'category': currentCategory.id }|merge(ckParameters)) }}">{{ 'link.all_providers'|trans({}, 'SonataMediaBundle') }}</a>
+                </li>
                 {% for provider_name in providers %}
                     <li>
                         <a href="{{ admin.generateUrl('browser', {'context': persistent_parameters.context, 'provider': provider_name, 'category': currentCategory.id }|merge(ckParameters)) }}">{{ provider_name|trans({}, 'SonataMediaBundle') }}</a>
