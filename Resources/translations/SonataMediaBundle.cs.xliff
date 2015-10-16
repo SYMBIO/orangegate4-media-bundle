@@ -469,6 +469,10 @@
                 <source>Gallery List</source>
                 <target>Galerie</target>
             </trans-unit>
+            <trans-unit id="Created At">
+                <source>Created At</source>
+                <target>Datum vytvoření</target>
+            </trans-unit>
         </body>
     </file>
 </xliff>
