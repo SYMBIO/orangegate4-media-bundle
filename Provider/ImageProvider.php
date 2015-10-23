@@ -27,7 +27,9 @@ class ImageProvider extends BaseImageProvider
 	{
 		$in = $this->getReferenceFile($media);
 		$out = $this->getFilesystem()->get($this->generatePrivateUrl($media, 'reference'), true);
+		$oldUmask = umask(0002);
 		$out->setContent($in->getContent());
+		umask($oldUmask);
 	}
 
 	/**
