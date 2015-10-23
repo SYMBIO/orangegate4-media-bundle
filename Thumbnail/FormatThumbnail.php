@@ -62,6 +62,7 @@ class FormatThumbnail implements ThumbnailInterface
 
         foreach ($provider->getFormats() as $format => $settings) {
             if (substr($format, 0, strlen($media->getContext())) == $media->getContext() || $format === 'admin' || $format == 'orangegate') {
+                $oldUmask = umask(0002);
                 $provider->getResizer()->resize(
                     $media,
                     $referenceFile,
@@ -69,6 +70,7 @@ class FormatThumbnail implements ThumbnailInterface
                     $this->getExtension($media),
                     $settings
                 );
+                umask($oldUmask);
             }
         }
     }
