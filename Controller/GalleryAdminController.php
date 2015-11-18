@@ -9,13 +9,14 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class GalleryAdminController extends Controller
 {
-
     /**
-     * return the Response object associated to the list action.
+     * List action.
      *
      * @param Request $request
      *
      * @return Response
+     *
+     * @throws AccessDeniedException If access is not granted
      */
     public function listAction(Request $request = null)
     {
@@ -23,21 +24,33 @@ class GalleryAdminController extends Controller
             throw new AccessDeniedException();
         }
 
+        $preResponse = $this->preList($request);
+        if ($preResponse !== null) {
+            return $preResponse;
+        }
+
         if ($listMode = $request->get('_list_mode')) {
             $this->admin->setListMode($listMode);
         }
 
+        $sitesPool = $this->get('orangegate.site.pool');
+        $sites = $sitesPool->getSites();
+        $currentSite = $sitesPool->getCurrentSite($request, $sites);
+
         $datagrid = $this->admin->getDatagrid();
+        $datagrid->setValue('site', null, $currentSite->getId());
         $formView = $datagrid->getForm()->createView();
 
         // set the theme for the current Admin Form
         $this->get('twig')->getExtension('form')->renderer->setTheme($formView, $this->admin->getFilterTheme());
 
         return $this->render($this->admin->getTemplate('list'), array(
-            'action'     => 'list',
-            'form'       => $formView,
-            'datagrid'   => $datagrid,
-            'csrf_token' => $this->getCsrfToken('sonata.batch'),
-        ));
+            'action'      => 'list',
+            'form'        => $formView,
+            'datagrid'    => $datagrid,
+            'sites'       => $sites,
+            'currentSite' => $currentSite,
+            'csrf_token'  => $this->getCsrfToken('sonata.batch'),
+        ), null, $request);
     }
 }

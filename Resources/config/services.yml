@@ -13,7 +13,7 @@ services:
       class: Symbio\OrangeGate\MediaBundle\Admin\GalleryAdmin
       tags:
         - { name: sonata.admin, manager_type: orm, group: Content, label: galleries }
-      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Gallery,SymbioOrangeGateMediaBundle:GalleryAdmin, @sonata.media.pool]
+      arguments: [null, Symbio\OrangeGate\MediaBundle\Entity\Gallery,SymbioOrangeGateMediaBundle:GalleryAdmin, @sonata.media.pool, @orangegate.site.pool]
       calls:
         - [ setTranslationDomain, [%sonata.media.admin.media.translation_domain%] ]
         - [ setTemplates, [{list: SymbioOrangeGateMediaBundle:GalleryAdmin:list.html.twig}] ]

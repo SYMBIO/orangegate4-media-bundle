@@ -7,10 +7,12 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\MediaBundle\Provider\Pool;
 use Symbio\OrangeGate\AdminBundle\Admin\Admin as BaseAdmin;
+use Symbio\OrangeGate\PageBundle\Entity\SitePool;
 
 class GalleryAdmin extends BaseAdmin
 {
     protected $pool;
+    protected $sitePool;
     protected $translationDomain = 'SymbioOrangeGateMediaBundle';
 
     /**
@@ -19,11 +21,13 @@ class GalleryAdmin extends BaseAdmin
      * @param string                            $baseControllerName
      * @param \Sonata\MediaBundle\Provider\Pool $pool
      */
-    public function __construct($code, $class, $baseControllerName, Pool $pool)
+    public function __construct($code, $class, $baseControllerName, Pool $pool, SitePool $sitePool)
     {
         parent::__construct($code, $class, $baseControllerName);
 
         $this->pool = $pool;
+
+        $this->sitePool = $sitePool;
     }
 
     protected function configureFormFields(FormMapper $formMapper)
@@ -75,6 +79,9 @@ class GalleryAdmin extends BaseAdmin
     protected function configureDatagridFilters(DatagridMapper $datagridMapper)
     {
         $datagridMapper
+            ->add('site', null, array(
+                'show_filter' => false,
+            ))
             ->add('name')
             ->add('enabled')
         ;
@@ -85,6 +92,8 @@ class GalleryAdmin extends BaseAdmin
         foreach ($gallery->getGalleryHasMedias() as $media) {
             $media->setGallery($gallery);
         }
+
+        $gallery->setSite($this->sitePool->getCurrentSite($this->getRequest()));
     }
 
     /**
