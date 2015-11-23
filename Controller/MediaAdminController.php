@@ -195,6 +195,21 @@ class MediaAdminController extends Controller
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function createAction(Request $request = null)
+    {
+        /*
+         * Remove provider from querystring when upload is submitted.
+         * Provider existence causes list media from  provider only.
+         */
+        if ($request->getMethod() == Request::METHOD_POST && $request->query->get('provider')) {
+            $request->query->remove('provider');
+        }
+        return parent::createAction($request);
+    }
+
+    /**
      * Loads lists of pages available that user can links to
      * @return array
      */
