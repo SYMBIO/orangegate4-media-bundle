@@ -70,11 +70,21 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
             return;
         }
 
-        foreach ($this->getContextList() as $context) {
-            $menu->addChild(
-                $this->trans($context->getName()),
-                array('uri' => $this->generateUrl('list', array('context' => $context->getId(), 'category' => null, 'hide_context' => null)))
-            );
+        $current_context = $this->getPersistentParameter('context');
+
+        $contexts = $this->getContextList();
+
+        if (count($contexts) > 1) {
+            foreach ($this->getContextList() as $context) {
+                $child = $menu->addChild(
+                    $this->trans($context->getName()),
+                    array('uri' => $this->generateUrl('list', array('context' => $context->getId(), 'category' => null, 'hide_context' => null)))
+                );
+
+                if ($current_context === $context->getId()) {
+                    $child->setCurrent(true);
+                }
+            }
         }
     }
 
@@ -106,7 +116,11 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
         if ($filter = $this->getRequest()->get('filter') && isset($filter['context'])) {
             $context = $filter['context']['value'];
         } else {
-            $context = $this->getRequest()->get('context', $this->pool->getDefaultContext());
+            $context = $this->getRequest()->get('context', false);
+            $available_contexts = array_map(function ($c) { return $c->getId(); }, $this->getContextList());
+            if (!$context || !in_array($context, $available_contexts)) {
+                $context = $available_contexts[0];
+            }
         }
 
         $providers = $this->pool->getProvidersByContext($context);
