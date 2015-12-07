@@ -3,6 +3,8 @@
 namespace Symbio\OrangeGate\MediaBundle\Twig\Extension;
 
 use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\PathTokenParser;
+use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\ThumbnailTokenParser;
+use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\MediaTokenParser;
 use Sonata\CoreBundle\Model\ManagerInterface;
 use Sonata\MediaBundle\Model\MediaInterface;
 use Sonata\MediaBundle\Provider\Pool;
@@ -34,7 +36,9 @@ class MediaExtension extends \Twig_Extension
      */
     public function getTokenParsers()
     {
-        return array(
+        return array (
+            new MediaTokenParser($this->getName()),
+            new ThumbnailTokenParser($this->getName()),
             new PathTokenParser($this->getName()),
         );
     }
@@ -55,6 +59,40 @@ class MediaExtension extends \Twig_Extension
     public function initRuntime(\Twig_Environment $environment)
     {
         $this->environment = $environment;
+    }
+
+    /**
+     * @param \Sonata\MediaBundle\Model\MediaInterface $media
+     * @param string                                   $format
+     * @param array                                    $options
+     *
+     * @return string
+     */
+    public function media($media = null, $format, $options = array())
+    {
+        $media = $this->getMedia($media);
+
+        if (!$media) {
+            return '';
+        }
+
+        $provider = $this
+            ->getMediaService()
+            ->getProvider($media->getProviderName());
+
+        $format = $provider->getFormatName($media, $format);
+
+        $options = $provider->getHelperProperties($media, $format, $options);
+
+        if (array_key_exists('src', $options)) {
+            $options['src'] .= '?v=' . $media->getUpdatedAt()->getTimestamp();
+        }
+
+        return $this->render($provider->getTemplate('helper_view'), array(
+            'media'    => $media,
+            'format'   => $format,
+            'options'  => $options,
+        ));
     }
 
     /**
@@ -90,6 +128,66 @@ class MediaExtension extends \Twig_Extension
     }
 
     /**
+     * Returns the thumbnail for the provided media
+     *
+     * @param \Sonata\MediaBundle\Model\MediaInterface $media
+     * @param string                                   $format
+     * @param array                                    $options
+     *
+     * @return string
+     */
+    public function thumbnail($media = null, $format, $options = array())
+    {
+        $media = $this->getMedia($media);
+
+        if (!$media) {
+            return '';
+        }
+
+        $provider = $this->getMediaService()
+           ->getProvider($media->getProviderName());
+
+        $format = $provider->getFormatName($media, $format);
+        $format_definition = $provider->getFormat($format);
+
+        // build option
+        $defaultOptions = array(
+            'title' => $media->getName(),
+        );
+
+        if ($format_definition['width']) {
+            $defaultOptions['width'] = $format_definition['width'];
+        }
+        if ($format_definition['height']) {
+            $defaultOptions['height'] = $format_definition['height'];
+        }
+
+        $options = array_merge($defaultOptions, $options);
+
+        $options['src'] = $this->generatePublicUrl($provider, $media, $format);
+
+        return $this->render($provider->getTemplate('helper_thumbnail'), array(
+            'media'    => $media,
+            'options'  => $options,
+        ));
+    }
+
+    /**
+     * @param string $template
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    public function render($template, array $parameters = array())
+    {
+        if (!isset($this->resources[$template])) {
+            $this->resources[$template] = $this->environment->loadTemplate($template);
+        }
+
+        return $this->resources[$template]->render($parameters);
+    }
+
+    /**
      * @param \Sonata\MediaBundle\Model\MediaInterface $media
      * @param string                                   $format
      *
@@ -108,7 +206,7 @@ class MediaExtension extends \Twig_Extension
 
         $format = $provider->getFormatName($media, $format);
 
-        return $provider->generatePublicUrl($media, $format).'?'.$media->getUpdatedAt()->getTimestamp();
+        return $this->generatePublicUrl($provider, $media, $format);
     }
 
     /**
@@ -135,5 +233,10 @@ class MediaExtension extends \Twig_Extension
     public function getName()
     {
         return 'orangegate_media';
+    }
+
+    private function generatePublicUrl($provider, $media, $format)
+    {
+        return $provider->generatePublicUrl($media, $format) . '?v=' . $media->getUpdatedAt()->getTimestamp();
     }
 }

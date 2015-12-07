@@ -119,7 +119,7 @@
                                 {% elseif field_description.name == 'name' %}
                                     <td>
                                         <div>
-                                            <a href="{{ path('orangegate_media_show', {'id': object.id}) }}" class="select" style="float: left; margin-right: 6px;">{% thumbnail object, 'admin' with {'width': 75} %}</a>
+                                            <a href="{{ path('orangegate_media_show', {'id': object.id}) }}" class="select" style="float: left; margin-right: 6px;">{% og_thumbnail object, 'admin' with {'width': 75} %}</a>
                                             <strong><a href="{{ path('orangegate_media_show', {'id': object.id}) }}" class="select">{{ object.name }}</a></strong> <br />
                                             {{ object.providerName|trans({}, 'SonataMediaBundle') }}{% if object.width %}: {{ object.width }}{% if object.height %}x{{ object.height }}{% endif %}px{% endif %}
                                             {% if formats[object.id]|length > 0 %}
