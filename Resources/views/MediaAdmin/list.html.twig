@@ -12,7 +12,7 @@
             <li>
                 <div class="sonata-tree__item{% if element.id == current_category %} is-active{% endif %} is-toggled" data-treeview-toggled>
                     {% if element.parent or root %}<i class="fa fa-caret-right" data-treeview-toggler></i>{% endif %}
-                    <a class="sonata-tree__item__edit" href="{{ url(app.request.attributes.get('_route'), app.request.query.all|merge({category: element.id})) }}">{{ element.name }}</a>
+                    <a class="sonata-tree__item__edit" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({category: element.id})) }}">{{ element.name }}</a>
                 </div>
 
                 {% if element.children|length %}
