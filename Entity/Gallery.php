@@ -100,6 +100,18 @@ class Gallery
     }
 
     /**
+     * @param int $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+
+
+    /**
      * Get site
      *
      * @return Site
@@ -152,6 +164,16 @@ class Gallery
     public function getGalleryHasMedias()
     {
         return $this->galleryHasMedias;
+    }
+
+    /**
+     * @param mixed $galleryHasMedias
+     * @return $this
+     */
+    public function setGalleryHasMedias($galleryHasMedias)
+    {
+        $this->galleryHasMedias = $galleryHasMedias;
+        return $this;
     }
 
     public function getTranslations()
