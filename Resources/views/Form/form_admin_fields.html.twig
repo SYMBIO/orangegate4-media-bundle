@@ -159,7 +159,7 @@
             <span id="field_widget_{{ id }}" class="field-short-description">
                 <a class="btn btn-xs btn-danger image-box-close" href="#"><i class="fa fa-2x fa-trash"></i></a>
                 {% if sonata_admin.field_description.associationadmin.id(sonata_admin.value) %}
-                    {% thumbnail sonata_admin.value, 'orangegate' %}
+                    {% og_thumbnail sonata_admin.value, 'orangegate' %}
                 {% elseif sonata_admin.field_description.options.placeholder is defined and sonata_admin.field_description.options.placeholder %}
                     <span class="inner-field-short-description">
                         {{ sonata_admin.field_description.options.placeholder|trans({}, 'SonataAdminBundle') }}

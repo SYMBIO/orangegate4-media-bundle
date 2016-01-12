@@ -4,6 +4,8 @@ namespace Symbio\OrangeGate\MediaBundle\Twig\Extension;
 
 use Sonata\FormatterBundle\Extension\BaseProxyExtension;
 use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\PathTokenParser;
+use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\MediaTokenParser;
+use Symbio\OrangeGate\MediaBundle\Twig\TokenParser\ThumbnailTokenParser;
 
 class FormatterMediaExtension extends BaseProxyExtension
 {
@@ -24,6 +26,8 @@ class FormatterMediaExtension extends BaseProxyExtension
     {
         return array(
             'og_path',
+            'og_media',
+            'og_thumbnail',
         );
     }
 
@@ -46,6 +50,8 @@ class FormatterMediaExtension extends BaseProxyExtension
     {
         return array(
             new PathTokenParser($this->getName()),
+            new MediaTokenParser($this->getName()),
+            new ThumbnailTokenParser($this->getName()),
         );
     }
 
