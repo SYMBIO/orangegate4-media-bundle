@@ -21,7 +21,7 @@ class GalleryHasMedia
     protected $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Media", cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="Media", inversedBy="galleryHasMedias", cascade={"persist"})
      * @ORM\JoinColumn(name="media_id", referencedColumnName="id", nullable=true)
      */
     protected $media;
