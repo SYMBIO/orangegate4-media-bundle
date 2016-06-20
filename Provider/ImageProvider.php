@@ -52,23 +52,15 @@ class ImageProvider extends BaseImageProvider
 
     public function getFormatName(MediaInterface $media, $format)
     {
-        if ($format == 'admin') {
-            return 'admin';
-        }
+		if (in_array($format, array('admin', 'reference', 'orangegate'))) {
+			return $format;
+		}
 
-        if ($format == 'reference') {
-            return 'reference';
-        }
+		$baseName = $media->getContext() . '_';
+		if (substr($format, 0, strlen($baseName)) == $baseName) {
+			return $format;
+		}
 
-        if ($format == 'orangegate') {
-            return 'orangegate';
-        }
-
-        $baseName = $media->getContext().'_';
-        if (substr($format, 0, strlen($baseName)) == $baseName) {
-            return $format;
-        }
-
-        return $baseName.$format;
-    }
+		return $baseName . str_replace('-', '_', $format);
+	}
 }
