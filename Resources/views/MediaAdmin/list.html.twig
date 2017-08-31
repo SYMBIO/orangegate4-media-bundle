@@ -15,8 +15,8 @@
                     <a class="sonata-tree__item__edit" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({category: element.id})) }}">{{ element.name }}</a>
                 </div>
 
-                {% if element.children|length %}
-                    {{ _self.navigate_child(element.children, admin, false, current_category, depth + 1) }}
+                {% if element.children.snapshot|length %}
+                    {{ _self.navigate_child(element.children.snapshot, admin, false, current_category, depth + 1) }}
                 {% endif %}
             </li>
         {% endfor %}
