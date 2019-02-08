@@ -5,13 +5,20 @@
     {% set name = prefix ~ item.name %}
     {% set childPrefix = name ~ '/' %}
 
+    {% set children = {} %}
+    {% for child in item.children %}
+        {% if child not in children %}
+            {% set children = children|merge({(child.id): child}) %}
+        {% endif %}
+    {% endfor %}
+
     <li>
         <a href="{{ admin.generateUrl('browser', {'context' : item.context.id, 'category': item.id}|merge(ckParameters)) }}">
             {{ name }}
         </a>
     </li>
 
-    {% for child in item.children %}
+    {% for child in children %}
         {{ _self.recursiveCategoryList(child, childPrefix, admin, ckParameters) }}
     {% endfor %}
 {%  endmacro %}
