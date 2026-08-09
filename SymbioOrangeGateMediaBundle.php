@@ -1,23 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symbio\OrangeGate\MediaBundle\DependencyInjection\Compiler\AddProviderCompilerPass;
 
+/**
+ * OrangeGate media extensions on Sonata Media 4 (no parent-bundle inheritance).
+ */
 class SymbioOrangeGateMediaBundle extends Bundle
 {
-    public function build(ContainerBuilder $container)
-    {
-        $container->addCompilerPass(new AddProviderCompilerPass());
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParent()
-    {
-        return 'SonataMediaBundle';
-    }
 }

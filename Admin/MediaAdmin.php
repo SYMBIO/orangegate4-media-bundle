@@ -1,87 +1,73 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle\Admin;
 
-use Doctrine\ORM\EntityManagerInterface;
-use Sonata\AdminBundle\Admin\AdminInterface;
 use Knp\Menu\ItemInterface as MenuItemInterface;
+use Sonata\AdminBundle\Admin\AdminInterface;
+use Sonata\AdminBundle\Datagrid\DatagridMapper;
+use Sonata\AdminBundle\Datagrid\ListMapper;
+use Sonata\AdminBundle\Route\RouteCollectionInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
 use Sonata\ClassificationBundle\Model\ContextManagerInterface;
+use Sonata\DoctrineORMAdminBundle\Filter\ChoiceFilter;
+use Sonata\MediaBundle\Admin\BaseMediaAdmin;
 use Sonata\MediaBundle\Provider\Pool;
 use Symbio\OrangeGate\PageBundle\Entity\SitePool;
-use Sonata\AdminBundle\Datagrid\ListMapper;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
+class MediaAdmin extends BaseMediaAdmin
 {
-    protected $datagridValues = array(
+    /** @var array<string, mixed> */
+    protected array $datagridValues = [
         '_page' => 1,
         '_sort_by' => 'name',
-        '_sort_order' => 'asc'
-    );
+        '_sort_order' => 'asc',
+    ];
 
-    protected $listModes = array(
-//        'list' => array(
-//            'class' => 'fa fa-list fa-fw',
-//        ),
-        'mosaic' => array(
+    /** @var array<string, array{class: string}> */
+    protected array $listModes = [
+        'mosaic' => [
             'class' => 'fa fa-th-large fa-fw',
-        ),
-//        'tree' => array(
-//            'class' => 'fa fa-sitemap fa-fw',
-//        ),
-    );
+        ],
+    ];
 
-    /**
-     * @var ContextManagerInterface
-     */
-    protected $contextManager;
+    private SitePool $sitePool;
 
-    /**
-     * @var SitePool
-     */
-    protected $sitePool;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct($code, $class, $baseControllerName, Pool $pool, CategoryManagerInterface $categoryManager, ContextManagerInterface $contextManager, SitePool $sitePool)
-    {
-        parent::__construct($code, $class, $baseControllerName, $pool, $categoryManager);
-
-        $this->contextManager = $contextManager;
+    public function __construct(
+        Pool $pool,
+        CategoryManagerInterface $categoryManager,
+        ContextManagerInterface $contextManager,
+        SitePool $sitePool,
+    ) {
+        parent::__construct($pool, $categoryManager, $contextManager);
         $this->sitePool = $sitePool;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureRoutes(\Sonata\AdminBundle\Route\RouteCollection $collection)
+    protected function configureRoutes(RouteCollectionInterface $collection): void
     {
         $collection->add('browser', 'browser');
         $collection->add('upload', 'upload');
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureSideMenu(MenuItemInterface $menu, $action, AdminInterface $childAdmin = null)
+    protected function configureSideMenu(MenuItemInterface $menu, $action, ?AdminInterface $childAdmin = null): void
     {
-        if (!$childAdmin && !in_array($action, array('list'))) {
+        if (!$childAdmin && !\in_array($action, ['list'], true)) {
             return;
         }
 
-        $current_context = $this->getPersistentParameter('context');
-
+        $currentContext = $this->getPersistentParameter('context');
         $contexts = $this->getContextList();
 
-        if (count($contexts) > 1) {
-            foreach ($this->getContextList() as $context) {
+        if (\count($contexts) > 1) {
+            foreach ($contexts as $context) {
                 $child = $menu->addChild(
                     $this->trans($context->getName()),
-                    array('uri' => $this->generateUrl('list', array('context' => $context->getId(), 'category' => null, 'hide_context' => null)))
+                    ['uri' => $this->generateUrl('list', ['context' => $context->getId(), 'category' => null, 'hide_context' => null])]
                 );
 
-                if ($current_context === $context->getId()) {
+                if ($currentContext === $context->getId()) {
                     $child->setCurrent(true);
                 }
             }
@@ -89,88 +75,128 @@ class MediaAdmin extends \Sonata\MediaBundle\Admin\ORM\MediaAdmin
     }
 
     /**
-     * Returns list of available contexts
-     *
-     * @return array
+     * @return array<int, object>
      */
-    public function getContextList()
+    public function getContextList(): array
     {
-        $criteria = array(
-            'site' => $this->sitePool->getCurrentSite($this->getRequest())
+        return $this->contextManager->findBy(
+            ['site' => $this->sitePool->getCurrentSite($this->getRequest())],
+            ['name' => 'asc']
         );
-
-        return $this->contextManager->findBy($criteria, array('name' => 'asc'));
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getPersistentParameters()
+    protected function configurePersistentParameters(): array
     {
-        $parameters = parent::getPersistentParameters();
-
         if (!$this->hasRequest()) {
-            return $parameters;
+            return [];
         }
 
-        if ($filter = $this->getRequest()->get('filter') && isset($filter['context'])) {
+        $request = $this->getRequest();
+        $filter = $request->query->all('filter');
+
+        if (\array_key_exists('context', $filter)) {
             $context = $filter['context']['value'];
         } else {
-            $context = $this->getRequest()->get('context', false);
-            $available_contexts = array_map(function ($c) { return $c->getId(); }, $this->getContextList());
-            if (!$context || !in_array($context, $available_contexts)) {
-                $context = $available_contexts[0];
+            $context = $request->query->get('context', false);
+            $availableContexts = array_map(static fn ($c) => $c->getId(), $this->getContextList());
+            if (!$context || !\in_array($context, $availableContexts, true)) {
+                $context = $availableContexts[0] ?? $this->pool->getDefaultContext();
             }
         }
 
-        $providers = $this->pool->getProvidersByContext($context);
-        $provider = $this->getRequest()->get('provider');
+        \assert(\is_string($context));
 
-        // if the context has only one provider, set it into the request
-        // so the intermediate provider selection is skipped
-        if (count($providers) == 1 && null === $provider) {
+        $providers = $this->pool->getProvidersByContext($context);
+        $provider = $request->query->get('provider');
+
+        if (1 === \count($providers) && null === $provider) {
             $provider = array_shift($providers)->getName();
-            $this->getRequest()->query->set('provider', $provider);
+            $request->query->set('provider', $provider);
         }
 
-        $categoryId = $this->getRequest()->get('category');
+        $parameters = [];
+        if (1 < \count($providers) && null !== $provider) {
+            $parameters['provider'] = $provider;
+        }
 
-        if (!$categoryId) {
+        $categoryId = $request->query->get('category');
+        if (null !== $this->categoryManager && null === $categoryId) {
             $categoryId = $this->categoryManager->getRootCategory($context)->getId();
         }
 
-        return array_merge($parameters, array(
-            'provider' => $provider,
+        return array_merge($parameters, [
             'context' => $context,
             'category' => $categoryId,
-            'hide_context' => (bool)$this->getRequest()->get('hide_context')
-        ));
+            'hide_context' => $request->query->getBoolean('hide_context'),
+        ]);
     }
 
     /**
-     * Set datagrid values used before datagrid build
-     *
-     * @param $values array
-     * @return AdminInterface
+     * @param array<string, mixed> $values
      */
-    public function setDatagridValues(array $values)
+    public function setDatagridValues(array $values): self
     {
         $this->datagridValues = array_merge($this->datagridValues, $values);
 
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function configureListFields(ListMapper $listMapper)
+    protected function configureListFields(ListMapper $listMapper): void
     {
         $listMapper
             ->addIdentifier('name')
             ->add('description')
             ->add('enabled')
             ->add('size')
-            ->add('createdAt')
-        ;
+            ->add('createdAt');
+    }
+
+    protected function configureDatagridFilters(DatagridMapper $filter): void
+    {
+        $options = ['choices' => []];
+
+        foreach ($this->pool->getContexts() as $name => $context) {
+            $options['choices'][$name] = $name;
+        }
+
+        $filter
+            ->add('name')
+            ->add('providerReference')
+            ->add('enabled')
+            ->add('context', null, [
+                'field_type' => ChoiceType::class,
+                'field_options' => $options,
+                'show_filter' => true !== $this->getPersistentParameter('hide_context'),
+            ]);
+
+        if (null !== $this->categoryManager) {
+            $filter->add('category', null, ['show_filter' => false]);
+        }
+
+        $filter
+            ->add('width')
+            ->add('height')
+            ->add('contentType');
+
+        $providersChoices = [];
+        $providers = $this->pool->getProvidersByContext($this->getPersistentParameter('context', $this->pool->getDefaultContext()));
+        foreach ($providers as $provider) {
+            $name = $provider->getName();
+            $providersChoices[$this->getTranslator()->trans(
+                $name,
+                [],
+                $provider->getProviderMetadata()->getDomain() ?? $this->getTranslationDomain()
+            )] = $name;
+        }
+
+        $filter->add('providerName', ChoiceFilter::class, [
+            'field_options' => [
+                'choices' => $providersChoices,
+                'required' => false,
+                'multiple' => false,
+                'expanded' => false,
+            ],
+            'field_type' => ChoiceType::class,
+        ]);
     }
 }

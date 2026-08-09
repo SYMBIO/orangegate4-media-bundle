@@ -1,204 +1,63 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
+use Sonata\MediaBundle\Entity\BaseGalleryItem;
+use Sonata\MediaBundle\Model\GalleryInterface;
+use Sonata\MediaBundle\Model\GalleryItemInterface;
+use Sonata\MediaBundle\Model\MediaInterface;
 
 /**
- * @ORM\Entity
- * @ORM\Table(name="media__gallery_media")
+ * Sonata gallery item mapped to legacy-compatible table media__gallery_item.
+ *
+ * gallery/media associations are registered by SonataMediaExtension (DoctrineCollector).
+ *
+ * @phpstan-extends BaseGalleryItem
  */
-class GalleryHasMedia
+#[ORM\Entity]
+#[ORM\Table(name: 'media__gallery_item')]
+class GalleryHasMedia extends BaseGalleryItem
 {
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    protected ?int $id = null;
 
-    /**
-     * @var integer $id
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Media", cascade={"persist"})
-     * @ORM\JoinColumn(name="media_id", referencedColumnName="id", nullable=true)
-     */
-    protected $media;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="galleryHasMedias")
-     * @ORM\JoinColumn(name="gallery_id", referencedColumnName="id", nullable=true)
-     */
-    protected $gallery;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $position;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $enabled = true;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     */
-    protected $updatedAt;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     */
-    protected $createdAt;
-
-
-    /**
-     * Get id
-     *
-     * @return integer $id
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
     /**
-     * Set gallery
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\Gallery $gallery
-     * @return GalleryHasMedia
+     * @return Gallery|null
      */
-    public function setGallery(Gallery $gallery = null)
+    public function getGallery(): ?GalleryInterface
     {
-        $this->gallery = $gallery;
+        $gallery = parent::getGallery();
 
-        return $this;
+        return $gallery instanceof Gallery ? $gallery : null;
+    }
+
+    public function setGallery(?GalleryInterface $gallery = null): void
+    {
+        parent::setGallery($gallery);
     }
 
     /**
-     * Get gallery
-     *
-     * @return \Symbio\OrangeGate\MediaBundle\Entity\Gallery
+     * @return Media|null
      */
-    public function getGallery()
+    public function getMedia(): ?MediaInterface
     {
-        return $this->gallery;
+        $media = parent::getMedia();
+
+        return $media instanceof Media ? $media : null;
     }
 
-    /**
-     * Set media
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\Media $media
-     * @return GalleryHasMedia
-     */
-    public function setMedia(Media $media = null)
+    public function setMedia(?MediaInterface $media = null): void
     {
-        $this->media = $media;
-
-        return $this;
+        parent::setMedia($media);
     }
-
-    /**
-     * Get media
-     *
-     * @return \Symbio\OrangeGate\MediaBundle\Entity\Media
-     */
-    public function getMedia()
-    {
-        return $this->media;
-    }
-
-    /**
-     * Get position
-     *
-     * @return mixed
-     */
-    public function getPosition()
-    {
-        return $this->position;
-    }
-
-    /**
-     * Set position
-     *
-     * @param mixed $position
-     * @return GalleryHasMedia
-     */
-    public function setPosition($position)
-    {
-        $this->position = $position;
-        return $this;
-    }
-
-    /**
-     * Get enabled
-     *
-     * @return mixed
-     */
-    public function getEnabled()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Set enabled
-     *
-     * @param mixed $enabled
-     * @return GalleryHasMedia
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return mixed
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param mixed $updatedAt
-     * @return GalleryHasMedia
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return mixed
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param mixed $createdAt
-     * @return GalleryHasMedia
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-        return $this;
-    }
-
-
-
 }

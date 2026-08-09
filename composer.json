@@ -2,7 +2,12 @@
     "name": "symbio/orangegate4-media-bundle",
     "type": "symfony-bundle",
     "description": "SYMBIO OrangeGateMediaBundle",
-    "keywords": ["Admin Generator", "admin", "orangegate", "bootstrap"],
+    "keywords": [
+        "Admin Generator",
+        "admin",
+        "orangegate",
+        "bootstrap"
+    ],
     "homepage": "http://www.symbiodigital.com/",
     "license": "MIT",
     "authors": [
@@ -13,20 +18,26 @@
         }
     ],
     "require": {
-        "sonata-project/media-bundle": "~2.4@dev",
-        "symbio/orangegate4-classification-bundle": "~1.0@dev",
-        "cocur/slugify": "^1.2"
+        "php": "^8.5",
+        "symfony/framework-bundle": "7.4.*",
+        "symfony/validator": "7.4.*",
+        "sonata-project/media-bundle": "^4.20",
+        "symbio/orangegate4-classification-bundle": "^4.1 || 4.1.x-dev || dev-feature/php-8-5-upgrade || dev-master",
+        "gedmo/doctrine-extensions": "^3.17",
+        "cocur/slugify": "^4.6"
     },
-    "require-dev": {
-    },
-    "suggest": {
-    },
+    "require-dev": {},
+    "suggest": {},
     "autoload": {
-        "psr-4": { "Symbio\\OrangeGate\\MediaBundle\\": "" }
+        "psr-4": {
+            "Symbio\\OrangeGate\\MediaBundle\\": ""
+        }
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "4.1.x-dev"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }

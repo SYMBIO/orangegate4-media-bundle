@@ -1,116 +1,77 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle\Entity;
 
-use Sonata\MediaBundle\Entity\BaseMedia as BaseMedia;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Sonata\MediaBundle\Entity\BaseMedia;
+use Symbio\OrangeGate\ClassificationBundle\Entity\Category;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="media__media")
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'media__media')]
 class Media extends BaseMedia
 {
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    protected ?int $id = null;
+
+    #[ORM\Column(name: 'lang', type: 'string', length: 20, nullable: true)]
+    protected ?string $lang = null;
 
     /**
-     * @var integer $id
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @var Collection<int, GalleryHasMedia>
      */
-    protected $id;
+    protected Collection $galleryHasMedias;
 
-    /**
-     * @ORM\Column(name="lang", type="string", length=20, nullable=true)
-     */
-    protected $lang;
+    // category association is registered by SonataMediaExtension (DoctrineCollector)
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     */
-    protected $galleryHasMedias;
-
-    /**
-     * @var ArrayCollection
-     *
-     * @ORM\ManyToOne(targetEntity="Symbio\OrangeGate\ClassificationBundle\Entity\Category", cascade={"persist"})
-     * @ORM\JoinColumn(name="category_id", referencedColumnName="id", nullable=true)
-     */
-    protected $category;
-
-    /**
-     * Constructor
-     */
     public function __construct()
     {
-        $this->galleryHasMedias = new \Doctrine\Common\Collections\ArrayCollection();
+        parent::__construct();
+        $this->galleryHasMedias = new ArrayCollection();
         $this->enabled = true;
     }
 
-    /**
-     * Get id
-     *
-     * @return integer $id
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Add galleryHasMedias
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias
-     * @return Media
-     */
-    public function addGalleryHasMedia(\Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias)
+    public function addGalleryHasMedia(GalleryHasMedia $galleryHasMedia): self
     {
-        $this->galleryHasMedias[] = $galleryHasMedias;
+        if (!$this->galleryHasMedias->contains($galleryHasMedia)) {
+            $this->galleryHasMedias->add($galleryHasMedia);
+        }
 
         return $this;
     }
 
-    /**
-     * Remove galleryHasMedias
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias
-     */
-    public function removeGalleryHasMedia(\Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias)
+    public function removeGalleryHasMedia(GalleryHasMedia $galleryHasMedia): void
     {
-        $this->galleryHasMedias->removeElement($galleryHasMedias);
+        $this->galleryHasMedias->removeElement($galleryHasMedia);
     }
 
     /**
-     * Get galleryHasMedias
-     *
-     * @return \Doctrine\Common\Collections\Collection
+     * @return Collection<int, GalleryHasMedia>
      */
-    public function getGalleryHasMedias()
+    public function getGalleryHasMedias(): Collection
     {
         return $this->galleryHasMedias;
     }
 
-    /**
-     * Set lang
-     *
-     * @param string $lang
-     * @return Media
-     */
-    public function setLang($lang)
+    public function setLang(?string $lang): self
     {
         $this->lang = $lang;
 
         return $this;
     }
 
-    /**
-     * Get lang
-     *
-     * @return string
-     */
-    public function getLang()
+    public function getLang(): ?string
     {
         return $this->lang;
     }
-
 }

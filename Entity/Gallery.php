@@ -1,191 +1,146 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle\Entity;
 
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Cocur\Slugify\Slugify;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Sonata\MediaBundle\Entity\BaseGallery;
+use Sonata\MediaBundle\Model\GalleryItemInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="media__gallery")
+ * OrangeGate gallery entity — Sonata GalleryInterface via BaseGallery.
+ *
+ * galleryItems association is registered by SonataMediaExtension (DoctrineCollector).
+ *
+ * OG extensions (site, translations, slug) remain unmapped until legacy columns/tables
+ * exist in the target database (see docs/spike/gallery-alignment-check.md).
+ *
+ * @phpstan-extends BaseGallery<GalleryHasMedia>
  */
-class Gallery
+#[ORM\Entity]
+#[ORM\Table(name: 'media__gallery')]
+class Gallery extends BaseGallery
 {
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    protected ?int $id = null;
+
+    /** Unmapped until media__gallery.site_id exists in target DB */
+    private ?object $site = null;
+
+    /** Unmapped — legacy column / translation fallback */
+    private ?string $description = null;
+
+    /** Unmapped until media__gallery.slug exists in target DB */
+    private ?string $slug = null;
 
     /**
-     * @var integer $id
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
-
-    /**
-     * @var Site
+     * Unmapped until media__gallery_translation exists in target DB.
      *
-     * @ORM\ManyToOne(targetEntity="Symbio\OrangeGate\PageBundle\Entity\Site", cascade={"persist"})
-     * @ORM\JoinColumn(name="site_id", nullable=true)
+     * @var Collection<int, GalleryTranslation>
      */
-    private $site;
+    #[Assert\Valid]
+    private Collection $translations;
 
-    /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $name;
-
-    /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="text", nullable=true)
-     */
-    protected $description;
-
-    /**
-     * @ORM\OrderBy({"position" = "ASC"})
-     * @ORM\OneToMany(targetEntity="GalleryHasMedia", mappedBy="gallery", cascade={"persist", "remove"}, orphanRemoval=true)
-     */
-    protected $galleryHasMedias;
-
-    /**
-     * @Gedmo\Translatable
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    protected $slug;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    protected $enabled = true;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="update")
-     */
-    protected $updatedAt;
-
-    /**
-     * @ORM\Column(type="datetime")
-     * @Gedmo\Timestampable(on="create")
-     */
-    protected $createdAt;
-
-    /**
-     * @ORM\OneToMany(targetEntity="GalleryTranslation", mappedBy="object", indexBy="locale", cascade={"persist","remove"}, orphanRemoval=true)
-     * @Assert\Valid
-     */
-    private $translations;
-
-    /**
-     * Constructor
-     */
     public function __construct()
     {
-        $this->galleryHasMedias = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->translations = new \Doctrine\Common\Collections\ArrayCollection();
+        parent::__construct();
+        $this->translations = new ArrayCollection();
     }
 
-    /**
-     * Get id
-     *
-     * @return integer $id
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     * @return $this
-     */
-    public function setId($id)
+    public function setId(?int $id): self
     {
         $this->id = $id;
+
         return $this;
     }
 
-
-
-    /**
-     * Get site
-     *
-     * @return Site
-     */
-    public function getSite()
+    public function getSite(): ?object
     {
         return $this->site;
     }
 
-    /**
-     * Set site
-     *
-     * @param Site $site
-     * @return Context
-     */
-    public function setSite($site)
+    public function setSite(?object $site): self
     {
         $this->site = $site;
-        return $this;
-    }
-
-    /**
-     * Add galleryHasMedias
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias
-     * @return Gallery
-     */
-    public function addGalleryHasMedia(\Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias)
-    {
-        $this->galleryHasMedias[] = $galleryHasMedias;
 
         return $this;
     }
 
     /**
-     * Remove galleryHasMedias
-     *
-     * @param \Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias
+     * @return Collection<int, GalleryHasMedia>
      */
-    public function removeGalleryHasMedia(\Symbio\OrangeGate\MediaBundle\Entity\GalleryHasMedia $galleryHasMedias)
+    public function getGalleryHasMedias(): Collection
     {
-        $this->galleryHasMedias->removeElement($galleryHasMedias);
+        /** @var Collection<int, GalleryHasMedia> $items */
+        $items = $this->getGalleryItems();
+
+        return $items;
     }
 
-    /**
-     * Get galleryHasMedias
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getGalleryHasMedias()
+    public function addGalleryHasMedia(GalleryHasMedia $galleryHasMedia): self
     {
-        return $this->galleryHasMedias;
-    }
+        $this->addGalleryItem($galleryHasMedia);
 
-    /**
-     * @param mixed $galleryHasMedias
-     * @return $this
-     */
-    public function setGalleryHasMedias($galleryHasMedias)
-    {
-        $this->galleryHasMedias = $galleryHasMedias;
         return $this;
     }
 
-    public function getTranslations()
+    public function removeGalleryHasMedia(GalleryHasMedia $galleryHasMedia): void
+    {
+        $this->removeGalleryItem($galleryHasMedia);
+    }
+
+    /**
+     * @param Collection<int, GalleryHasMedia> $galleryHasMedias
+     */
+    public function setGalleryHasMedias(Collection $galleryHasMedias): self
+    {
+        $this->setGalleryItems($galleryHasMedias);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, GalleryHasMedia>
+     */
+    public function getGalleryItems(): Collection
+    {
+        /** @var Collection<int, GalleryHasMedia> $items */
+        $items = parent::getGalleryItems();
+
+        return $items;
+    }
+
+    public function addGalleryItem(GalleryItemInterface $galleryItem): void
+    {
+        parent::addGalleryItem($galleryItem);
+    }
+
+    /**
+     * @return Collection<int, GalleryTranslation>
+     */
+    public function getTranslations(): Collection
     {
         return $this->translations;
     }
 
-    public function addTranslation(GalleryTranslation $translation)
+    public function addTranslation(GalleryTranslation $translation): self
     {
         if (!$this->translations->contains($translation)) {
             if ($translation->getName()) {
-                $this->translations[] = $translation;
+                $this->translations->add($translation);
                 $translation->setObject($this);
             }
         }
@@ -193,174 +148,87 @@ class Gallery
         return $this;
     }
 
-    public function removeTranslation(GalleryTranslation $translation)
+    public function removeTranslation(GalleryTranslation $translation): self
     {
         if ($this->translations->contains($translation)) {
             $this->translations->removeElement($translation);
         }
+
         return $this;
     }
 
-    /**
-     * Get name
-     *
-     * @return mixed
-     */
-    public function getName()
+    /** Fluent helper — BaseGallery::setName() is void (GalleryInterface). */
+    public function withName(?string $name): self
     {
-        return $this->name;
-    }
+        $this->setName($name);
 
-    /**
-     * Set name
-     *
-     * @param mixed $name
-     * @return Gallery
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
         return $this;
     }
 
-    /**
-     * Get description
-     *
-     * @return mixed
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * Set description
-     *
-     * @param mixed $description
-     * @return Gallery
-     */
-    public function setDescription($description)
+    public function withDescription(?string $description): self
     {
         $this->description = $description;
+
         return $this;
     }
 
-    /**
-     * Get slug
-     *
-     * @return mixed
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * Set slug
-     *
-     * @param mixed $slug
-     * @return Gallery
-     */
-    public function setSlug($slug)
+    public function withSlug(?string $slug): self
     {
         $this->slug = $slug;
+
         return $this;
     }
 
-    /**
-     * Get enabled
-     *
-     * @return mixed
-     */
-    public function getEnabled()
+    /** Fluent helper — BaseGallery::setEnabled() is void (GalleryInterface). */
+    public function withEnabled(bool $enabled): self
     {
-        return $this->enabled;
-    }
+        $this->setEnabled($enabled);
 
-    /**
-     * Set enabled
-     *
-     * @param mixed $enabled
-     * @return Gallery
-     */
-    public function setEnabled($enabled)
-    {
-        $this->enabled = $enabled;
         return $this;
     }
 
-    /**
-     * Get updatedAt
-     *
-     * @return mixed
-     */
-    public function getUpdatedAt()
+    public function withUpdatedAt(?\DateTimeInterface $updatedAt): self
     {
-        return $this->updatedAt;
-    }
+        $this->setUpdatedAt($updatedAt);
 
-    /**
-     * Set updatedAt
-     *
-     * @param mixed $updatedAt
-     * @return Gallery
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
         return $this;
     }
 
-    /**
-     * Get createdAt
-     *
-     * @return mixed
-     */
-    public function getCreatedAt()
+    public function withCreatedAt(?\DateTimeInterface $createdAt): self
     {
-        return $this->createdAt;
-    }
+        $this->setCreatedAt($createdAt);
 
-    /**
-     * Set createdAt
-     *
-     * @param mixed $createdAt
-     * @return Gallery
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function generateSlug()
+    public function generateSlug(): void
     {
         $slugify = new Slugify();
-        $this->setSlug($slugify->slugify($this->getName()));
+        $this->slug = $slugify->slugify((string) $this->getName());
     }
 
-    public function __toString()
-    {
-        return $this->getName();
-    }
-
-    /**
-     * @Assert\Callback
-     */
-    public function isValid(ExecutionContextInterface $context)
+    #[Assert\Callback]
+    public function isValid(ExecutionContextInterface $context): void
     {
         $valid = false;
         foreach ($this->translations as $trans) {
             if ($trans->getName()) {
                 $valid = true;
+                break;
             }
         }
 
-        if (!$valid) {
+        if (!$valid && !$this->getName()) {
             $context->buildViolation('Musíte vyplnit alespoň jednu jazykovou verzi.')
                 ->atPath('translations')
                 ->addViolation();

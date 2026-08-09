@@ -1,178 +1,109 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbio\OrangeGate\MediaBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Translatable\Entity\MappedSuperclass\AbstractTranslation;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symbio\OrangeGate\ClassificationBundle\Entity\Tag;
 use Cocur\Slugify\Slugify;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity
- * @ORM\HasLifecycleCallbacks()
- * @ORM\Table(name="media__gallery__translation", uniqueConstraints={
- *    @ORM\UniqueConstraint(name="gallery_translation_unique_idx", columns={"locale", "object_id"})
- * })
+ * Legacy gallery translation — unmapped until media__gallery_translation exists in target DB.
  */
-class GalleryTranslation extends AbstractTranslation
+class GalleryTranslation
 {
+    #[ORM\Id]
+    #[ORM\Column(type: 'integer')]
+    #[ORM\GeneratedValue]
+    protected ?int $id = null;
 
-    /**
-     * @var integer $id
-     *
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    protected $id;
+    #[ORM\Column(type: 'string', length: 8)]
+    protected ?string $locale = null;
 
-    /**
-     * @var string $locale
-     *
-     * @ORM\Column(type="string", length=8)
-     */
-    protected $locale;
+    #[ORM\ManyToOne(targetEntity: Gallery::class, inversedBy: 'translations')]
+    #[ORM\JoinColumn(name: 'object_id', referencedColumnName: 'id', onDelete: 'CASCADE', nullable: false)]
+    protected ?Gallery $object = null;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="Gallery", inversedBy="translations")
-     * @ORM\JoinColumn(name="object_id", referencedColumnName="id", onDelete="CASCADE", nullable=false)
-     */
-    protected $object;
+    #[ORM\Column(type: 'string', length: 255)]
+    protected ?string $name = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $name;
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $description = null;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    protected $description;
+    #[ORM\Column(type: 'string', length: 255)]
+    protected ?string $slug = null;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    protected $slug;
-
-    public function __construct($locale = null, $name = null, $description = null)
+    public function __construct(?string $locale = null, ?string $name = null, ?string $description = null)
     {
         $this->locale = $locale;
         $this->name = $name;
         $this->description = $description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setName($name)
+    public function setName(?string $name): void
     {
         $this->name = $name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setDescription($description)
+    public function setDescription(?string $description): void
     {
         $this->description = $description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function setSlug($slug)
+    public function setSlug(?string $slug): void
     {
         $this->slug = $slug;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    /**
-     * Get id
-     *
-     * @return integer
-     */
-    public function getId()
+    public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * Set locale
-     *
-     * @param string $locale
-     * @return PostTranslation
-     */
-    public function setLocale($locale)
+    public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
 
         return $this;
     }
 
-    /**
-     * Get locale
-     *
-     * @return string
-     */
-    public function getLocale()
+    public function getLocale(): ?string
     {
         return $this->locale;
     }
 
-    /**
-     * Set object
-     *
-     * @param \Symbio\OrangeGate\NewsBundle\Entity\Post $object
-     * @return PostTranslation
-     */
-    public function setObject($object)
+    public function setObject(?Gallery $object): self
     {
         $this->object = $object;
 
         return $this;
     }
 
-    /**
-     * Get object
-     *
-     * @return \Symbio\OrangeGate\NewsBundle\Entity\Post
-     */
-    public function getObject()
+    public function getObject(): ?Gallery
     {
         return $this->object;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
-    public function generateSlug()
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function generateSlug(): void
     {
         $slugify = new Slugify();
-        $this->setSlug($slugify->slugify($this->getName()));
+        $this->setSlug($slugify->slugify((string) $this->getName()));
     }
 }
