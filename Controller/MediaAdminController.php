@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Symbio\OrangeGate\MediaBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Sonata\AdminBundle\Bridge\Exporter\AdminExporter;
 use Sonata\AdminBundle\Controller\CRUDController;
 use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
@@ -29,10 +30,14 @@ class MediaAdminController extends CRUDController
 {
     public static function getSubscribedServices(): array
     {
+        // Keys are locator ids; FQCN values are type hints. Wire key→id via
+        // container.service_subscriber tags in the app (dots are invalid as PHP types).
         return [
             'orangegate.site.pool' => SitePool::class,
             'sonata.classification.manager.category' => CategoryManagerInterface::class,
             'sonata.classification.manager.context' => ContextManagerInterface::class,
+            'sonata.media.pool' => Pool::class,
+            'sonata.media.manager.media' => MediaManagerInterface::class,
             'doctrine.orm.entity_manager' => EntityManagerInterface::class,
         ] + parent::getSubscribedServices();
     }
@@ -190,7 +195,13 @@ class MediaAdminController extends CRUDController
         $formView = $datagrid->getForm()->createView();
         $this->setFormTheme($formView, $admin->getFilterTheme());
 
-        return $this->render($admin->getTemplateRegistry()->getTemplate('list'), [
+        if ($this->container->has('sonata.admin.admin_exporter')) {
+            $exporter = $this->container->get('sonata.admin.admin_exporter');
+            \assert($exporter instanceof AdminExporter);
+            $exportFormats = $exporter->getAvailableFormats($admin);
+        }
+
+        return $this->renderWithExtraParams($admin->getTemplateRegistry()->getTemplate('list'), [
             'action' => 'list',
             'form' => $formView,
             'datagrid' => $datagrid,
@@ -198,6 +209,7 @@ class MediaAdminController extends CRUDController
             'sites' => $sites,
             'currentSite' => $currentSite,
             'csrf_token' => $this->getCsrfToken('sonata.batch'),
+            'export_formats' => $exportFormats ?? $admin->getExportFormats(),
         ]);
     }
 

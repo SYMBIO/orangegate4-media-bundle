@@ -1,7 +1,7 @@
 {% extends 'SymbioOrangeGateAdminBundle:CRUD:base_list.html.twig' %}
 
 {% block navbar_title %}
-    {{ admin.trans(admin.label, {}, admin.translationdomain) }}
+    {{ admin.label|trans({}, admin.translationDomain) }}
     <div class="btn-group">
         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
             <strong class="text-info">{{ currentSite.name }}</strong> <span class="caret"></span>
