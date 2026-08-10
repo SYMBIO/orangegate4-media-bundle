@@ -120,8 +120,14 @@ class MediaAdmin extends BaseMediaAdmin
         }
 
         $categoryId = $request->query->get('category');
-        if (null !== $this->categoryManager && null === $categoryId) {
-            $categoryId = $this->categoryManager->getRootCategory($context)->getId();
+        if (null !== $this->categoryManager && null !== $this->contextManager && null === $categoryId) {
+            $rootCategories = $this->categoryManager->getRootCategoriesForContext(
+                $this->contextManager->find($context)
+            );
+            $rootCategory = current($rootCategories);
+            if (false !== $rootCategory) {
+                $categoryId = $rootCategory->getId();
+            }
         }
 
         return array_merge($parameters, [

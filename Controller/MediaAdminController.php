@@ -6,7 +6,9 @@ namespace Symbio\OrangeGate\MediaBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Sonata\AdminBundle\Controller\CRUDController;
+use Sonata\ClassificationBundle\Model\CategoryInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\MediaBundle\Model\MediaInterface;
 use Sonata\MediaBundle\Model\MediaManagerInterface;
 use Sonata\MediaBundle\Provider\Pool;
@@ -30,8 +32,24 @@ class MediaAdminController extends CRUDController
         return [
             'orangegate.site.pool' => SitePool::class,
             'sonata.classification.manager.category' => CategoryManagerInterface::class,
+            'sonata.classification.manager.context' => ContextManagerInterface::class,
             'doctrine.orm.entity_manager' => EntityManagerInterface::class,
         ] + parent::getSubscribedServices();
+    }
+
+    private function getRootCategoryForContext(string $contextId): ?CategoryInterface
+    {
+        $categoryManager = $this->container->get('sonata.classification.manager.category');
+        \assert($categoryManager instanceof CategoryManagerInterface);
+        $contextManager = $this->container->get('sonata.classification.manager.context');
+        \assert($contextManager instanceof ContextManagerInterface);
+
+        $rootCategories = $categoryManager->getRootCategoriesForContext(
+            $contextManager->find($contextId)
+        );
+        $rootCategory = current($rootCategories);
+
+        return false !== $rootCategory ? $rootCategory : null;
     }
 
     public function browserAction(Request $request): Response
@@ -67,8 +85,9 @@ class MediaAdminController extends CRUDController
         \assert($categoryManager instanceof CategoryManagerInterface);
 
         $currentContext = $admin->getPersistentParameter('context');
+        \assert(\is_string($currentContext));
         $currentCategory = $admin->getPersistentParameter('category');
-        $rootCategory = $categoryManager->getRootCategory($currentContext);
+        $rootCategory = $this->getRootCategoryForContext($currentContext);
 
         $contextInCategory = $categoryManager->findBy([
             'id' => (int) $request->query->get('category'),
@@ -80,7 +99,7 @@ class MediaAdminController extends CRUDController
         $datagrid->setValue('providerName', null, $admin->getPersistentParameter('provider'));
 
         if (!$currentCategory || [] === $contextInCategory) {
-            $currentCategory = $rootCategory;
+            $currentCategory = $rootCategory?->getId();
         }
 
         $datagrid->setValue('category', null, $currentCategory);
@@ -144,9 +163,10 @@ class MediaAdminController extends CRUDController
         $categoryManager = $this->container->get('sonata.classification.manager.category');
         \assert($categoryManager instanceof CategoryManagerInterface);
 
-        $category = $categoryManager->getRootCategory($context);
+        \assert(\is_string($context));
+        $category = $this->getRootCategoryForContext($context);
 
-        if ([] === $filters) {
+        if ([] === $filters && null !== $category) {
             $datagrid->setValue('category', null, $category->getId());
         }
 
@@ -158,7 +178,7 @@ class MediaAdminController extends CRUDController
 
             if ([] !== $contextInCategory) {
                 $datagrid->setValue('category', null, $request->query->get('category'));
-            } else {
+            } elseif (null !== $category) {
                 $datagrid->setValue('category', null, $category->getId());
             }
         }

@@ -5,6 +5,7 @@ namespace Symbio\OrangeGate\MediaBundle\Listener;
 use Oneup\UploaderBundle\Event\PostPersistEvent;
 use Sonata\MediaBundle\Model\MediaManagerInterface;
 use Sonata\ClassificationBundle\Model\CategoryManagerInterface;
+use Sonata\ClassificationBundle\Model\ContextManagerInterface;
 use Sonata\MediaBundle\Provider\Pool;
 use Symbio\OrangeGate\MediaBundle\Entity\Media;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,15 +16,23 @@ class UploadListener
 
     private $categoryManager;
 
+    private $contextManager;
+
     private $pool;
 
     private $container;
 
-    public function __construct(MediaManagerInterface $manager, Pool $pool, CategoryManagerInterface $categoryManager, ContainerInterface $container)
-    {
+    public function __construct(
+        MediaManagerInterface $manager,
+        Pool $pool,
+        CategoryManagerInterface $categoryManager,
+        ContextManagerInterface $contextManager,
+        ContainerInterface $container,
+    ) {
         $this->manager = $manager;
         $this->pool = $pool;
         $this->categoryManager = $categoryManager;
+        $this->contextManager = $contextManager;
         $this->container = $container;
     }
 
@@ -78,13 +87,15 @@ class UploadListener
      */
     protected function getRootCategory($context)
     {
-        $rootCategories = $this->categoryManager->getRootCategories(false);
+        $rootCategories = $this->categoryManager->getRootCategoriesForContext(
+            $this->contextManager->find($context)
+        );
+        $rootCategory = current($rootCategories);
 
-        if (!array_key_exists($context, $rootCategories)) {
+        if (false === $rootCategory) {
             throw new \RuntimeException(sprintf('There is no main category related to context: %s', $context));
         }
 
-        return $rootCategories[$context];
+        return $rootCategory;
     }
-
 }
