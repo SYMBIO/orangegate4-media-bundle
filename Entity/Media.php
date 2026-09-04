@@ -74,4 +74,13 @@ class Media extends BaseMedia
     {
         return $this->lang;
     }
+
+    /**
+     * Prod dumps still have NULL in media__media.cdn_is_flushable. Doctrine then
+     * leaves Sonata's typed bool uninitialized and getCdnIsFlushable() fatals.
+     */
+    public function getCdnIsFlushable(): bool
+    {
+        return isset($this->cdnIsFlushable) && $this->cdnIsFlushable;
+    }
 }
